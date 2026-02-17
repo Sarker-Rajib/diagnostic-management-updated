@@ -134,13 +134,13 @@ export interface IPatientInfo {
 
 export interface IServiceItem {
   _id?: string;
+  serviceCode: string;
   serviceName: string;
   testName: string;
   price: number;
   department: string;
   reportGroup: string;
-  profile: string;
-  serviceCode: string;
+  panel: boolean;
 }
 
 export interface IBilledBy {

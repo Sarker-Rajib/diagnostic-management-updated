@@ -42,11 +42,11 @@ export default function ServiceManageForm({
     price: 0,
     department: department[0],
     reportGroup: reportGroup[0],
-    // profile: "",
+    panel: false,
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
 
@@ -81,7 +81,7 @@ export default function ServiceManageForm({
           price: 0,
           department: department[0],
           reportGroup: reportGroup[0],
-          // profile: "",
+          panel: false,
         });
       } else {
         toast.error(`Error creating patient: ${data?.message}`);
@@ -190,16 +190,20 @@ export default function ServiceManageForm({
                 ))}
               </select>
             </div>
-            {/* 
+
             <div>
               <label>Profile (optional)</label>
-              <input
-                className="mt-1 w-full border border-gray-300 rounded px-3 py-2"
-                type="text"
-                name="profile"
+              <select
+                name="panel"
+                value={formData.reportGroup}
                 onChange={handleChange}
-              />
-            </div> */}
+                className="mt-1 w-full border border-gray-300 rounded px-3 py-2"
+                required
+              >
+                <option value="false">No</option>
+                <option value="true">Yes</option>
+              </select>
+            </div>
           </div>
           <div className="text-end pt-3">
             <button

@@ -14,7 +14,7 @@ export interface IServiceData {
   price: number;
   department: (typeof department)[number];
   reportGroup: (typeof reportGroup)[number];
-  profile?: string;
+  panel: boolean;
   serviceCode?: number;
   createdAt?: string;
   updatedAt?: string;

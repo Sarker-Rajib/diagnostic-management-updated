@@ -54,7 +54,7 @@ export default function ServiceUpdatePage({}) {
             Authorization: accToken,
           },
           body: JSON.stringify(formData),
-        }
+        },
       );
 
       const data = await response.json();
@@ -198,22 +198,51 @@ export default function ServiceUpdatePage({}) {
             </select>
           </div>
 
-          {/* <div>
-            <label>Profile (optional)</label>
-            <input
-              className="mt-1 w-full border border-sky-500 rounded px-3 py-2"
-              type="text"
-              name="profile"
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  profile: e.target.value,
-                })
-              }
-              defaultValue={service?.profile}
-            />
-          </div> */}
+          <div>
+            <label>Panel</label>
+
+            <div className="mt-1 flex gap-4 border border-sky-500 p-1.5 rounded">
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="panel"
+                  checked={service?.panel === true}
+                  onChange={() => {
+                    (setFormData({
+                      ...formData,
+                      panel: true,
+                    }),
+                      setService({
+                        ...service!,
+                        panel: true,
+                      }));
+                  }}
+                />
+                Yes
+              </label>
+
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="panel"
+                  checked={service?.panel === false}
+                  onChange={() => {
+                    (setFormData({
+                      ...formData,
+                      panel: false,
+                    }),
+                      setService({
+                        ...service!,
+                        panel: false,
+                      }));
+                  }}
+                />
+                No
+              </label>
+            </div>
+          </div>
         </div>
+
         <div className="text-end pt-3">
           <button
             type="submit"

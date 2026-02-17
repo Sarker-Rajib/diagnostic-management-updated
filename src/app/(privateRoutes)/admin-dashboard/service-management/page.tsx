@@ -87,7 +87,7 @@ export default function ServiceManagaPage() {
 
             <div className="flex items-center gap-3 w-full sm:w-auto">
               {/* Search Box */}
-              <div className="relative flex-grow sm:flex-grow-0 sm:w-64">
+              <div className="relative grow sm:grow-0 sm:w-64">
                 <input
                   type="text"
                   placeholder="Search services..."
@@ -165,7 +165,7 @@ export default function ServiceManagaPage() {
                     Report Group
                   </th>
                   <th className="py-1 px-4 text-left font-semibold text-gray-700 text-sm border-b">
-                    Profile
+                    Panel
                   </th>
                   <th className="py-1 px-4 text-left font-semibold text-gray-700 text-sm border-b">
                     Service Code
@@ -197,7 +197,9 @@ export default function ServiceManagaPage() {
                     <td className="py-1 px-4 text-gray-700">
                       {item.reportGroup}
                     </td>
-                    <td className="py-1 px-4 text-gray-700">{item.profile}</td>
+                    <td className="py-1 px-4 text-gray-700">
+                      {item?.panel ? "Yes" : "No"}
+                    </td>
                     <td className="py-1 px-4 text-gray-700 font-mono text-sm">
                       {item.serviceCode}
                     </td>
