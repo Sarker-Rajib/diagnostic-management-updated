@@ -41,7 +41,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
-      <div className="absolute inset-0 bg-gradient-to-br from-sky-500 via-teal-600 to-purple-700"></div>
+      <div className="absolute inset-0 bg-linear-to-br from-sky-500 via-teal-600 to-purple-700"></div>
 
       {/* Floating bubbles animation */}
       <div className="absolute inset-0 overflow-hidden">
