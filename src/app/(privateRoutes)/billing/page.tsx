@@ -203,7 +203,7 @@ export default function BillPage() {
   return (
     <div className="p-2 max-w-7xl mx-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-center text-white text-lg font-bold py-1 mb-2 bg-gradient-to-r from-teal-600 to-teal-400 rounded-lg shadow-md">
+        <h2 className="text-center text-white text-lg font-bold py-1 mb-2 bg-linear-to-r from-teal-600 to-teal-400 rounded-lg shadow-md">
           Create Bill
         </h2>
 
@@ -371,7 +371,8 @@ export default function BillPage() {
                               onClick={() => {
                                 setSelectedServices((prev) => {
                                   const exists = prev.some(
-                                    (s) => s.serviceCode === service.serviceCode
+                                    (s) =>
+                                      s.serviceCode === service.serviceCode,
                                   );
 
                                   const { _id, ...rest } = service; // remove _id field
@@ -423,8 +424,8 @@ export default function BillPage() {
                             onClick={() =>
                               setSelectedServices((prev) =>
                                 prev.filter(
-                                  (s) => s.serviceCode !== service.serviceCode
-                                )
+                                  (s) => s.serviceCode !== service.serviceCode,
+                                ),
                               )
                             }
                             className="border cursor-pointer text-red-500 hover:text-red-700 transition-colors"
@@ -594,7 +595,7 @@ export default function BillPage() {
                               saving || !selectedPatient
                                 ? "bg-gray-400 cursor-not-allowed"
                                 : `
-                                bg-gradient-to-r from-teal-600 to-teal-500
+                                bg-linear-to-r from-teal-600 to-teal-500
                                 hover:from-teal-700 hover:to-teal-600
                                 active:scale-[0.98] hover:shadow-lg
                                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2
@@ -614,7 +615,7 @@ export default function BillPage() {
 
                   {/* Animated background for enabled state */}
                   {!(saving || !selectedPatient) && (
-                    <span className="absolute inset-0 bg-gradient-to-r from-teal-700 to-teal-600 opacity-0 hover:opacity-100 transition-opacity duration-300 z-0"></span>
+                    <span className="absolute inset-0 bg-linear-to-r from-teal-700 to-teal-600 opacity-0 hover:opacity-100 transition-opacity duration-300 z-0"></span>
                   )}
                 </button>
               </div>

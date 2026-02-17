@@ -59,7 +59,7 @@ export default function PatientsPage() {
   }, [searchText, reload, page, limit]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50 p-2">
+    <div className="min-h-screen bg-linear-to-br from-teal-50 to-blue-50 p-2">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-2 gap-4">
@@ -93,7 +93,7 @@ export default function PatientsPage() {
 
               <div className="flex items-center gap-3 w-full sm:w-auto">
                 {/* Search Box */}
-                <div className="relative flex-grow sm:flex-grow-0 sm:w-64">
+                <div className="relative grow sm:grow-0 sm:w-64">
                   <input
                     type="text"
                     placeholder="Search patients..."
@@ -218,8 +218,8 @@ export default function PatientsPage() {
                               patient?.gender === "Male"
                                 ? "bg-blue-100 text-blue-800"
                                 : patient?.gender === "Female"
-                                ? "bg-pink-100 text-pink-800"
-                                : "bg-purple-100 text-gray-800"
+                                  ? "bg-pink-100 text-pink-800"
+                                  : "bg-purple-100 text-gray-800"
                             }`}
                           >
                             {patient?.gender}

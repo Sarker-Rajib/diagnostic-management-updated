@@ -35,7 +35,7 @@ export const CreatePatientComponent = ({
 
   // Handle Input Change
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setPatient({ ...patient, [name]: value });

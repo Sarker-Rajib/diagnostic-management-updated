@@ -1,6 +1,6 @@
 "use client";
 
-import { CreditCard, Users } from "lucide-react";
+import { CreditCard, Database, Users } from "lucide-react";
 import Link from "next/link";
 
 export default function AdminDashPage() {
@@ -55,6 +55,16 @@ export default function AdminDashPage() {
           >
             <Users size={20} />
             Service Management
+          </Link>
+
+          <Link
+            href="/admin-dashboard/reference-range"
+            className="bg-white/10 text-nowrap hover:bg-white/20 text-white font-medium py-3 px-6 rounded-xl border border-white/20
+                 transition-all duration-300 transform hover:scale-[1.02] backdrop-blur-sm
+                 flex items-center justify-center gap-2"
+          >
+            <Database size={20} />
+            Reference Ranges
           </Link>
         </div>
       </div>
