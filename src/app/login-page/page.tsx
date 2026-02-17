@@ -87,7 +87,7 @@ export default function LoginPage() {
             <input
               type="password"
               name="password"
-              defaultValue={"9876543210"}
+              defaultValue={"9876543"}
               placeholder="Enter your password"
               className="w-full rounded-lg border border-gray-300 p-3 text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none"
             />
