@@ -37,7 +37,7 @@ export default function RefRangePage() {
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
       // Build URL conditionally
-      let url = `${envConfig.baseApi}/reference-value`;
+      let url = `${envConfig.baseApi}/panel-reference`;
 
       if (searchText.trim()) {
         // Searching → no pagination params

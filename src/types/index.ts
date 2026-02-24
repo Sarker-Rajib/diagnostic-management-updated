@@ -59,6 +59,15 @@ export interface IPrescription {
   prescriptionId: string;
 }
 
+export interface ITestRefData {
+  _id: string;
+  refName: string;
+  testName: string;
+  unit: string;
+  referenceRange: string;
+  priority: string;
+}
+
 // import { GroupBase, StylesConfig } from "react-select";
 // export const customStyles: StylesConfig<
 //   ISelectOption,
