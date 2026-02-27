@@ -45,9 +45,9 @@ export default function RootLayout({
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50">
+    <div className="min-h-screen bg-linear-to-br from-teal-50 to-blue-50">
       {/* Sidebar */}
-      <div className="w-16 bg-gradient-to-b from-teal-700 to-teal-800 h-screen flex flex-col items-center py-8 gap-6 fixed top-0 left-0 shadow-xl z-10">
+      <div className="w-16 bg-linear-to-b from-teal-700 to-teal-800 h-screen flex flex-col items-center py-8 gap-6 fixed top-0 left-0 shadow-xl z-10">
         {/* Logo/App Name */}
         <div className="mb-8">
           <div className="bg-white/20 p-3 rounded-xl" title="brand Logo">
@@ -56,7 +56,7 @@ export default function RootLayout({
         </div>
 
         {/* Navigation Items */}
-        <div className="flex flex-col items-center gap-4 flex-grow">
+        <div className="flex flex-col items-center gap-4 grow">
           {menuItems.map((item, i) => (
             <Link
               title={item.name}

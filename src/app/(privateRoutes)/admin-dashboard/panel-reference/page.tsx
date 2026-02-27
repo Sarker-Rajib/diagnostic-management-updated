@@ -1,8 +1,7 @@
 "use client";
 import { TestRefCraeteForm } from "@/components/Forms/ReferenceRangeAddForm";
 import { envConfig } from "@/config/envConfig";
-import { IMeta } from "@/interfaces";
-import { ITestRefData } from "@/types";
+import { IMeta, ITestRefData } from "@/types";
 import {
   ChevronLeft,
   ChevronRight,

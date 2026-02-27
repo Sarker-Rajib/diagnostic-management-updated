@@ -1,12 +1,12 @@
 "use client";
 import { envConfig } from "@/config/envConfig";
-import { department, reportGroup } from "@/constants";
 import { accessToken } from "@/services/AuthServices";
 import { Plus, X } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { toast } from "sonner";
 import FixedPop from "../fixedPop";
-import { IServiceData } from "@/interfaces";
+import { constants } from "@/constants";
+import { IServiceData } from "@/types";
 
 export default function ServiceManageForm({
   setIsOpen,
@@ -40,8 +40,9 @@ export default function ServiceManageForm({
     serviceName: "",
     testName: "",
     price: 0,
-    department: department[0],
-    reportGroup: reportGroup[0],
+    division: constants.department[0],
+    department: constants.department[0],
+    reportGroup: constants.reportGroup[0],
     panel: false,
   });
 
@@ -79,8 +80,9 @@ export default function ServiceManageForm({
           serviceName: "",
           testName: "",
           price: 0,
-          department: department[0],
-          reportGroup: reportGroup[0],
+          division: constants.division[0],
+          department: constants.department[0],
+          reportGroup: constants.reportGroup[0],
           panel: false,
         });
       } else {
@@ -154,6 +156,26 @@ export default function ServiceManageForm({
                 required
               />
             </div>
+
+            <div>
+              <label className="text-teal-600 block text-sm font-medium">
+                Division
+              </label>
+              <select
+                name="division"
+                value={formData.reportGroup}
+                onChange={handleChange}
+                className="mt-1 w-full border border-gray-300 rounded px-3 py-2"
+                required
+              >
+                {constants.division.map((grp) => (
+                  <option key={grp} value={grp}>
+                    {grp}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div>
               <label className="text-teal-600 block text-sm font-medium">
                 Department
@@ -166,7 +188,7 @@ export default function ServiceManageForm({
                 className="mt-1 w-full border border-gray-300 rounded px-3 py-2"
                 required
               >
-                {department.map((dep) => (
+                {constants.department.map((dep) => (
                   <option key={dep} value={dep}>
                     {dep}
                   </option>
@@ -175,7 +197,9 @@ export default function ServiceManageForm({
             </div>
 
             <div>
-              <label>Report Group</label>
+              <label className="text-teal-600 block text-sm font-medium">
+                Report Group
+              </label>
               <select
                 name="reportGroup"
                 value={formData.reportGroup}
@@ -183,7 +207,7 @@ export default function ServiceManageForm({
                 className="mt-1 w-full border border-gray-300 rounded px-3 py-2"
                 required
               >
-                {reportGroup.map((grp) => (
+                {constants.reportGroup.map((grp) => (
                   <option key={grp} value={grp}>
                     {grp}
                   </option>
@@ -192,17 +216,43 @@ export default function ServiceManageForm({
             </div>
 
             <div>
-              <label>Profile (optional)</label>
-              <select
-                name="panel"
-                value={formData.reportGroup}
-                onChange={handleChange}
-                className="mt-1 w-full border border-gray-300 rounded px-3 py-2"
-                required
-              >
-                <option value="false">No</option>
-                <option value="true">Yes</option>
-              </select>
+              <label className="text-teal-600 block text-sm font-medium">
+                Report Group
+              </label>
+
+              <div className="mt-1 flex gap-4 border border-sky-500 p-1.5 rounded">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="panel"
+                    value="yes"
+                    checked={formData.panel === true}
+                    onChange={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        panel: true,
+                      }))
+                    }
+                  />
+                  Yes
+                </label>
+
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="panel"
+                    value="no"
+                    checked={formData.panel === false}
+                    onChange={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        panel: false,
+                      }))
+                    }
+                  />
+                  No
+                </label>
+              </div>
             </div>
           </div>
           <div className="text-end pt-3">

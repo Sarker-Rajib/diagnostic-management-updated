@@ -1,13 +1,13 @@
 "use client";
 import { envConfig } from "@/config/envConfig";
-import { department, reportGroup } from "@/constants";
 import { accessToken } from "@/services/AuthServices";
 import { ChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { IServiceData } from "@/interfaces";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { constants } from "@/constants";
+import { IServiceData } from "@/types";
 
 export default function ServiceUpdatePage({}) {
   const pathname = usePathname();
@@ -143,6 +143,36 @@ export default function ServiceUpdatePage({}) {
               required
             />
           </div>
+
+          <div>
+            <label className="text-teal-600 block text-sm font-medium">
+              Division
+            </label>
+
+            <select
+              name="division"
+              value={service?.division}
+              onChange={(e) => {
+                setFormData({
+                  ...formData,
+                  division: e.target.value,
+                });
+                setService({
+                  ...service!,
+                  division: e.target.value,
+                });
+              }}
+              className="mt-1 w-full border border-sky-500 rounded px-3 py-2"
+              required
+            >
+              {constants.division.map((dep) => (
+                <option key={dep} value={dep}>
+                  {dep}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div>
             <label className="text-teal-600 block text-sm font-medium">
               Department
@@ -164,7 +194,7 @@ export default function ServiceUpdatePage({}) {
               className="mt-1 w-full border border-sky-500 rounded px-3 py-2"
               required
             >
-              {department.map((dep) => (
+              {constants.department.map((dep) => (
                 <option key={dep} value={dep}>
                   {dep}
                 </option>
@@ -190,7 +220,7 @@ export default function ServiceUpdatePage({}) {
               className="mt-1 w-full border border-sky-500 rounded px-3 py-2"
               required
             >
-              {reportGroup.map((grp) => (
+              {constants.reportGroup.map((grp) => (
                 <option key={grp} value={grp}>
                   {grp}
                 </option>

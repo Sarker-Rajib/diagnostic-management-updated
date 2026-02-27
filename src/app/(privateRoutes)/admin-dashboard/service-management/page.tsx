@@ -1,7 +1,7 @@
 "use client";
 import ServiceManageForm from "@/components/Services/ServiceForm";
 import { envConfig } from "@/config/envConfig";
-import { IMeta, IServiceData } from "@/interfaces";
+import { IMeta, IServiceData } from "@/types";
 import {
   ChevronLeft,
   ChevronRight,
@@ -159,6 +159,9 @@ export default function ServiceManagaPage() {
                     Price
                   </th>
                   <th className="py-1 px-4 text-left font-semibold text-gray-700 text-sm border-b">
+                    Division
+                  </th>
+                  <th className="py-1 px-4 text-left font-semibold text-gray-700 text-sm border-b">
                     Department
                   </th>
                   <th className="py-1 px-4 text-left font-semibold text-gray-700 text-sm border-b">
@@ -191,6 +194,7 @@ export default function ServiceManagaPage() {
                     <td className="py-1 px-4 text-gray-900 font-semibold">
                       ৳{item.price}
                     </td>
+                    <td className="py-1 px-4 text-gray-700">{item.division}</td>
                     <td className="py-1 px-4 text-gray-700">
                       {item.department}
                     </td>

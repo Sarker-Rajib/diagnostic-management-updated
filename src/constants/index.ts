@@ -21,27 +21,29 @@ export const constants = {
 
   CPaymentStatus: ["Paid", "Partial", "Unpaid"],
   CPaymentMethod: ["Cash", "Card", "Online"],
+
+  division: ["Laboratory Services", "Radiology & Imaging", "Ultrasonogram"],
+
+  department: [
+    "Biochemistry",
+    "Haematology",
+    "Clinical Pathology",
+    "Histopathology & Cytopathology",
+    "Microbiology",
+    "Immunology",
+  ],
+
+  reportGroup: [
+    "CBC",
+    "Chemistry",
+    "Immunology",
+    "Serology",
+    "Coagulation",
+    "Widal",
+    "Blood_Culture",
+    "Urine_Culture",
+    "Pus_Culture",
+    "Stool_Culture",
+    "CSF",
+  ],
 };
-
-export const department = [
-  "Biochemistry",
-  "Haematology",
-  "Clinical Pathology",
-  "Histopathology & Cytopathology",
-  "Microbiology",
-  "Immunology",
-];
-
-export const reportGroup = [
-  "CBC",
-  "Chemistry",
-  "Immunology",
-  "Serology",
-  "Coagulation",
-  "Widal",
-  "Blood_Culture",
-  "Urine_Culture",
-  "Pus_Culture",
-  "Stool_Culture",
-  "CSF",
-];

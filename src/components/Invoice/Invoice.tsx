@@ -9,7 +9,7 @@ const Invoice = ({ invoice }: { invoice: IInvoice }) => {
           <div className="flex items-center justify-between border-b pb-4 mb-4">
             <div>
               <h1 className="text-2xl font-bold text-teal-700">
-                Dental Chamber
+                Smart Diagnostics
               </h1>
               <p className="text-xs text-gray-600">Address line, City, ZIP</p>
               <p className="text-xs text-gray-600">Phone: 01234567890</p>

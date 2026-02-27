@@ -35,10 +35,10 @@ export default function AdminDashLayout({
   ];
 
   return (
-    <div className="text-black min-h-screen p-2 relative bg-gradient-to-br from-sky-500 via-teal-600 to-cyan-500">
+    <div className="text-black min-h-screen p-2 relative bg-linear-to-br from-sky-500 via-teal-600 to-cyan-500">
       <div className="relative ">
         {/* {Children} */}
-        <div className="me-16 bg-white/30">{children}</div>
+        <div className="me-16">{children}</div>
 
         {/* side navbar */}
         <div className="w-16 bg-slate-700 h-screen flex items-center flex-col gap-4 fixed top-0 right-0 py-4">

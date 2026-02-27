@@ -1,6 +1,6 @@
 "use client";
 import { envConfig } from "@/config/envConfig";
-import { department, reportGroup } from "@/constants";
+import { constants } from "@/constants";
 import { accessToken } from "@/services/AuthServices";
 import { Plus, X } from "lucide-react";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
@@ -12,8 +12,9 @@ interface IServiceData {
   serviceName: string;
   testName: string;
   price: number;
-  department: (typeof department)[number];
-  reportGroup: (typeof reportGroup)[number];
+  division: (typeof constants.division)[number];
+  department: (typeof constants.department)[number];
+  reportGroup: (typeof constants.reportGroup)[number];
   profile?: string;
   serviceCode?: number;
   createdAt?: string;
@@ -52,13 +53,14 @@ export default function ServiceManageForm({
     serviceName: "",
     testName: "",
     price: 0,
-    department: department[0],
-    reportGroup: reportGroup[0],
+    division: constants.division[0],
+    department: constants.department[0],
+    reportGroup: constants.reportGroup[0],
     profile: "",
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
 
@@ -92,8 +94,9 @@ export default function ServiceManageForm({
           serviceName: "",
           testName: "",
           price: 0,
-          department: department[0],
-          reportGroup: reportGroup[0],
+          division: constants.division[0],
+          department: constants.department[0],
+          reportGroup: constants.reportGroup[0],
           profile: "",
         });
       } else {
@@ -167,6 +170,27 @@ export default function ServiceManageForm({
                 required
               />
             </div>
+
+            <div>
+              <label className="text-teal-600 block text-sm font-medium">
+                Division
+              </label>
+
+              <select
+                name="department"
+                value={formData.division}
+                onChange={handleChange}
+                className="mt-1 w-full border border-gray-300 rounded px-3 py-2"
+                required
+              >
+                {constants.division.map((divi) => (
+                  <option key={divi} value={divi}>
+                    {divi}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <div>
               <label className="text-teal-600 block text-sm font-medium">
                 Department
@@ -179,7 +203,7 @@ export default function ServiceManageForm({
                 className="mt-1 w-full border border-gray-300 rounded px-3 py-2"
                 required
               >
-                {department.map((dep) => (
+                {constants.department.map((dep) => (
                   <option key={dep} value={dep}>
                     {dep}
                   </option>
@@ -196,7 +220,7 @@ export default function ServiceManageForm({
                 className="mt-1 w-full border border-gray-300 rounded px-3 py-2"
                 required
               >
-                {reportGroup.map((grp) => (
+                {constants.reportGroup.map((grp) => (
                   <option key={grp} value={grp}>
                     {grp}
                   </option>

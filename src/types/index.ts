@@ -1,3 +1,5 @@
+import { constants } from "@/constants";
+
 export interface IUser {
   _id: string;
   fullName: string;
@@ -60,79 +62,13 @@ export interface IPrescription {
 }
 
 export interface ITestRefData {
-  _id: string;
+  _id?: string;
   refName: string;
   testName: string;
   unit: string;
+  priority: number;
   referenceRange: string;
-  priority: string;
 }
-
-// import { GroupBase, StylesConfig } from "react-select";
-// export const customStyles: StylesConfig<
-//   ISelectOption,
-//   false,
-//   GroupBase<ISelectOption>
-// > = {
-//   option: (provided, state) => ({
-//     ...provided,
-//     backgroundColor: state.isSelected
-//       ? "#4F46E5"
-//       : state.isFocused
-//       ? "#E0E7FF"
-//       : "white",
-//     color: state.isSelected ? "white" : "#111827",
-//     padding: 10,
-//     cursor: "pointer",
-//   }),
-//   control: (provided) => ({
-//     ...provided,
-//     borderColor: "#CBD5E0",
-//     boxShadow: "none",
-//     "&:hover": {
-//       borderColor: "#A0AEC0",
-//     },
-//   }),
-//   singleValue: (provided) => ({
-//     ...provided,
-//     color: "#1F2937",
-//   }),
-// };
-
-// export interface ISelectData {
-//   label: string;
-//   value: string;
-// }
-
-// export const customStyleTwo: StylesConfig<
-//   ISelectData,
-//   false,
-//   GroupBase<ISelectData>
-// > = {
-//   option: (provided, state) => ({
-//     ...provided,
-//     backgroundColor: state.isSelected
-//       ? "#4F46E5"
-//       : state.isFocused
-//       ? "#E0E7FF"
-//       : "white",
-//     color: state.isSelected ? "white" : "#111827",
-//     padding: 10,
-//     cursor: "pointer",
-//   }),
-//   control: (provided) => ({
-//     ...provided,
-//     borderColor: "#CBD5E0",
-//     boxShadow: "none",
-//     "&:hover": {
-//       borderColor: "#A0AEC0",
-//     },
-//   }),
-//   singleValue: (provided) => ({
-//     ...provided,
-//     color: "#1F2937",
-//   }),
-// };
 
 export interface IPatientInfo {
   _id?: string;
@@ -246,4 +182,25 @@ export interface ITokenUser {
   userId: string;
   iat: number;
   exp: number;
+}
+
+export interface IMeta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface IServiceData {
+  _id?: string;
+  serviceName: string;
+  testName: string;
+  price: number;
+  division: (typeof constants.division)[number];
+  department: (typeof constants.department)[number];
+  reportGroup: (typeof constants.reportGroup)[number];
+  panel: boolean;
+  serviceCode?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }

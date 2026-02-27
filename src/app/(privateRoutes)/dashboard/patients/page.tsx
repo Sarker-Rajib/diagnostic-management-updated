@@ -12,10 +12,9 @@ import {
 import { envConfig } from "@/config/envConfig";
 import Link from "next/link";
 import { PropagateLoader } from "react-spinners";
-import { IPatient } from "@/types";
+import { IMeta, IPatient } from "@/types";
 import { UpdatePatientComponent } from "@/components/PatientComponents/UpdatePatient";
-import { CreatePatientComponent } from "@/components/PatientComponents/CreatePatient";
-import { IMeta } from "@/interfaces";
+import { CreatePatientComponent } from "@/components/PatientComponents/CreatePatient"; 
 
 export default function PatientsPage() {
   const [reload, setReload] = useState<boolean>(false);
