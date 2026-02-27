@@ -180,7 +180,7 @@ export const ServiceItems = () => {
 
         {updateService && (
           <div className="rounded-lg p-4 fixed top-0 left-0 w-full min-h-screen bg-transparent backdrop-blur-sm z-10 flex items-center justify-center">
-            <div className="w-full max-w-[550px] relative p-4 py-6 bg-white border rounded-lg border-teal-500">
+            <div className="w-full max-w-137.5 relative p-4 py-6 bg-white border rounded-lg border-teal-500">
               <p className="py-2 text-center text-xl">Upadate Service</p>
               <button
                 onClick={() => setUpdateService(null)}

@@ -54,7 +54,7 @@ export default function PrescriptioPage() {
               "Content-Type": "application/json",
               Authorization: `${token}`,
             },
-          }
+          },
         );
 
         const billsData = await billResponse.json();
@@ -100,7 +100,7 @@ export default function PrescriptioPage() {
       {/* Pt display data */}
       <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-teal-600 to-teal-800 px-6 py-4">
+        <div className="bg-linear-to-r from-teal-600 to-teal-800 px-6 py-4">
           <h1 className="text-2xl md:text-3xl font-bold text-white text-center">
             Patient History
           </h1>
@@ -180,7 +180,7 @@ export default function PrescriptioPage() {
                     <div className="flex justify-between border-b pb-2">
                       <span className="font-medium text-gray-600">Address</span>
                       <span
-                        className="text-gray-800 max-w-[150px] truncate"
+                        className="text-gray-800 max-w-37.5 truncate"
                         title={patient.address}
                       >
                         {patient.address || "N/A"}

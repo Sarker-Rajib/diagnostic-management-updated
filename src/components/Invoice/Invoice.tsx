@@ -4,7 +4,7 @@ const Invoice = ({ invoice }: { invoice: IInvoice }) => {
   return (
     <div className="hidden print:block print:p-8 print:bg-white text-black">
       {invoice && (
-        <div className="max-w-[800px] mx-auto border border-gray-300 p-6 text-sm font-sans">
+        <div className="max-w-200 mx-auto border border-gray-300 p-6 text-sm font-sans">
           {/* Header */}
           <div className="flex items-center justify-between border-b pb-4 mb-4">
             <div>

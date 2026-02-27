@@ -29,7 +29,7 @@ export default function DashboardPage() {
               className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
             >
               {/* Gradient background overlay on hover */}
-              <div className="absolute inset-0 bg-gradient-to-br from-teal-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+              <div className="absolute inset-0 bg-linear-to-br from-teal-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
 
               {/* Content */}
               <div className="relative z-10 flex flex-col items-center text-center">

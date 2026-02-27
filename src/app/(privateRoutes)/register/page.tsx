@@ -120,7 +120,7 @@ export default function PatientRegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50 p-6">
+    <div className="min-h-screen bg-linear-to-br from-teal-50 to-blue-50 p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-center gap-4 mb-8">

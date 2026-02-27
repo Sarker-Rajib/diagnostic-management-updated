@@ -22,7 +22,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50 p-6 flex items-center justify-center">
+    <div className="min-h-screen bg-linear-to-br from-teal-50 to-blue-50 p-6 flex items-center justify-center">
       <div className="w-full max-w-6xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-2 text-teal-900">
@@ -38,7 +38,7 @@ export default function DashboardPage() {
               className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 border border-cyan-300 w-full"
             >
               {/* Gradient background overlay on hover */}
-              <div className="absolute inset-0 bg-gradient-to-br from-sky-500 to-amber-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+              <div className="absolute inset-0 bg-linear-to-br from-sky-500 to-amber-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
 
               {/* Content */}
               <div className="relative z-10 flex flex-col items-center text-center">

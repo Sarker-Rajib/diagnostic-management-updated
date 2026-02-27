@@ -39,7 +39,7 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-blue-50 p-6 flex items-center justify-center">
+    <div className="min-h-screen bg-linear-to-br from-teal-50 to-blue-50 p-6 flex items-center justify-center">
       <div className="w-full max-w-6xl">
         {/* Header */}
         <div className="text-center mb-12">
@@ -60,7 +60,7 @@ export default function HomePage() {
               className="group border border-cyan-200 relative overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
             >
               {/* Gradient background overlay on hover */}
-              <div className="absolute inset-0 bg-gradient-to-br from-teal-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+              <div className="absolute inset-0 bg-linear-to-br from-teal-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
 
               {/* Content */}
               <div className="relative z-10 flex flex-col items-center text-center">
@@ -86,7 +86,7 @@ export default function HomePage() {
             className="group relative cursor-pointer border border-red-100 overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
           >
             {/* Red gradient background overlay on hover */}
-            <div className="absolute inset-0 bg-gradient-to-br from-rose-500 to-amber-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
+            <div className="absolute inset-0 bg-linear-to-br from-rose-500 to-amber-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
 
             {/* Content */}
             <div className="relative z-10 flex flex-col items-center text-center">

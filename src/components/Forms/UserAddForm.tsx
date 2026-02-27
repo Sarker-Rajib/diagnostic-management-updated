@@ -22,7 +22,7 @@ export const AddUserForm = ({
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -157,7 +157,7 @@ export const AddUserForm = ({
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                className="mt-1 w-full border border-gray-300 rounded px-3 py-[10px]"
+                className="mt-1 w-full border border-gray-300 rounded px-3 py-2.5"
               >
                 {constants.roles.map((role) => (
                   <option key={role} value={role}>
