@@ -83,6 +83,7 @@ export interface IServiceItem {
   serviceName: string;
   testName: string;
   price: number;
+  division: string;
   department: string;
   reportGroup: string;
   panel: boolean;
