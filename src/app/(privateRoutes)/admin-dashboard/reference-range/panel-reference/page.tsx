@@ -1,7 +1,8 @@
 "use client";
+import { RefPanelCraeteForm } from "@/components/Forms/ReferencePanelAddForm";
 import { TestRefCraeteForm } from "@/components/Forms/ReferenceRangeAddForm";
 import { envConfig } from "@/config/envConfig";
-import { IMeta, ITestRefData } from "@/types";
+import { IMeta, ITestPanel, ITestPanelFull, ITestRefData } from "@/types";
 import {
   ChevronLeft,
   ChevronRight,
@@ -20,12 +21,10 @@ export default function RefRangePage() {
   const [reload, setReload] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState(false);
   // all refs
-  const [allTestRefs, setAllTestRefs] = useState<ITestRefData[] | null>(null);
-
-  // update states
-  const [toUpdateTestRef, setToUpdateTestRef] = useState<ITestRefData | null>(
+  const [allTestPanels, setAllTestPanels] = useState<ITestPanelFull[] | null>(
     null,
   );
+
   const [meta, setMeta] = useState<IMeta | null>(null);
 
   //  /// // //
@@ -36,7 +35,7 @@ export default function RefRangePage() {
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
       // Build URL conditionally
-      let url = `${envConfig.baseApi}/panel-reference`;
+      let url = `${envConfig.baseApi}/panel-reference/all`;
 
       if (searchText.trim()) {
         // Searching → no pagination params
@@ -49,7 +48,7 @@ export default function RefRangePage() {
       fetch(url)
         .then((res) => res.json())
         .then((data) => {
-          setAllTestRefs(data?.data?.testRefData);
+          setAllTestPanels(data?.data?.panelData);
           setMeta(data?.data?.meta);
           console.log(data);
         })
@@ -68,8 +67,8 @@ export default function RefRangePage() {
         <div className="flex flex-col md:flex-row justify-between items-center mb-2 gap-4">
           <div className="flex items-center gap-3 bg-teal-700 px-6 py-3 rounded-lg shadow-md">
             <Scale size={26} className="text-white" />
-            <h1 className="text-xl font-bold text-white">
-              Reference range Management
+            <h1 className="text-lg font-bold text-white">
+              Reference range (Panel) Management
             </h1>
           </div>
 
@@ -77,7 +76,7 @@ export default function RefRangePage() {
             onClick={() => setIsOpen(true)}
             className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white py-2 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1"
           >
-            <span className="text-lg font-semibold">Register Reference </span>
+            <span className="text-lg font-semibold">Register Panel </span>
             <Pencil size={20} className="text-white" />
           </button>
         </div>
@@ -88,7 +87,7 @@ export default function RefRangePage() {
           <div className="sticky top-1">
             <div className="bg-teal-600 rounded-t-xl px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 ">
               <h2 className="text-xl font-semibold text-white">
-                Patients List{" "}
+                Panel List{" "}
                 {meta && (
                   <span className="text-sm">( Total : {meta.total} )</span>
                 )}
@@ -150,7 +149,7 @@ export default function RefRangePage() {
 
           <div className="p-4">
             {/* Patients Table */}
-            {allTestRefs?.length === 0 ? (
+            {allTestPanels?.length === 0 ? (
               <div className="text-center py-8">
                 <div className="mx-auto w-24 h-24 bg-teal-100 rounded-full flex items-center justify-center mb-4">
                   <Users size={40} className="text-teal-600" />
@@ -177,10 +176,10 @@ export default function RefRangePage() {
                         Ref Name
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Unit
+                        Priority
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Normal Range
+                        Tests
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
@@ -188,29 +187,33 @@ export default function RefRangePage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200 text-slate-500">
-                    {allTestRefs?.map((ref, i) => (
+                    {allTestPanels?.map((ref, i) => (
                       <tr key={i} className="hover:bg-gray-50 transition">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <Link
                             href={`/dashboard/refs/${ref._id}`}
                             className="text-teal-600 hover:text-teal-800"
                           >
-                            {ref?.testName}
+                            {ref?.panelName}
                           </Link>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          {ref?.refName}
+                          {ref?.refPanelName}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          {ref?.unit}
+                          {ref?.priority}
                         </td>
                         <td className="px-6 py-4 whitespace-pre-line">
-                          {ref?.referenceRange}
+                          {ref?.tests.map((sd, i) => (
+                            <span key={i} className="block">
+                              {sd?.testName}
+                            </span>
+                          ))}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex gap-2">
                             <button
-                              onClick={() => setToUpdateTestRef(ref)}
+                              // onClick={() => setToUpdateTestRef(ref)}
                               title="Update data"
                               className="p-2 bg-teal-100 hover:bg-teal-200 rounded-lg text-teal-600 transition cursor-pointer"
                             >
@@ -231,7 +234,7 @@ export default function RefRangePage() {
               </div>
             )}
 
-            {allTestRefs === null && (
+            {allTestPanels === null && (
               <div className="py-12 flex justify-center">
                 <div className="text-center">
                   <PropagateLoader color="#0d9488" />
@@ -246,7 +249,7 @@ export default function RefRangePage() {
 
         {/* Add Patient Modal */}
         {isOpen && (
-          <TestRefCraeteForm
+          <RefPanelCraeteForm
             setIsOpen={setIsOpen}
             setReload={setReload}
             reload={reload}

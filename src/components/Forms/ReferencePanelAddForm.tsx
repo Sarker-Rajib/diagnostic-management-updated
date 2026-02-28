@@ -1,19 +1,13 @@
 "use client";
 
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { envConfig } from "@/config/envConfig";
 import { toast } from "sonner";
-import { X } from "lucide-react";
+import { Search, X } from "lucide-react";
+import { ITestPanel, ITestRefData } from "@/types";
+import { accessToken } from "@/services/AuthServices";
 
-interface ITestRef {
-  refName: string;
-  testName: string;
-  unit: string;
-  referenceRange: string;
-  priority?: number;
-}
-
-export const TestRefCraeteForm = ({
+export const RefPanelCraeteForm = ({
   setIsOpen,
   setReload,
   reload,
@@ -22,12 +16,15 @@ export const TestRefCraeteForm = ({
   setReload?: Dispatch<SetStateAction<boolean>>;
   reload?: boolean;
 }) => {
-  const [formData, setFormData] = useState<ITestRef>({
-    refName: "",
-    testName: "",
-    unit: "",
-    referenceRange: "",
-    priority: 0,
+  const [testRefs, setTestRefs] = useState<ITestRefData[]>([]);
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+  const [selectedRefs, setSelectedRefs] = useState<ITestRefData[]>([]);
+
+  const [formData, setFormData] = useState<Partial<ITestPanel>>({
+    refPanelName: "",
+    panelName: "",
+    priority: 1,
+    isPanel: true,
   });
 
   const handleChange = (
@@ -43,33 +40,36 @@ export const TestRefCraeteForm = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const acc = await accessToken();
+
+    const testIds = selectedRefs.map((item) => item._id);
+
+    const data = {
+      ...formData,
+      tests: testIds,
+    };
 
     try {
-      fetch(`${envConfig.baseApi}/reference-value`, {
+      fetch(`${envConfig.baseApi}/panel-reference`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          //   Authorization: `${acc}`,
+          Authorization: `${acc}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(data),
       })
         .then((response) => response.json())
         .then((data) => {
           if (data?.success) {
             toast.success(`${data?.message}`);
             setFormData({
-              refName: "",
-              testName: "",
-              unit: "",
-              referenceRange: "",
-              priority: 0,
+              refPanelName: "",
+              panelName: "",
+              priority: 1,
+              isPanel: true,
             });
-
+            setSelectedRefs([]);
             setIsOpen(false);
-            //   if (setNewPatient) {
-            //     setNewPatient(data?.data);
-
-            // setSaving(false);
             if (setReload) {
               setReload(!reload);
             }
@@ -83,6 +83,30 @@ export const TestRefCraeteForm = ({
     } catch (error: any) {
       alert(error.response?.data?.message || "Something went wrong");
     }
+  };
+
+  const handleRefSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    if (value.length < 1) {
+      setTestRefs([]);
+      return;
+    }
+
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    debounceRef.current = setTimeout(() => {
+      fetch(`${envConfig.baseApi}/reference-value/lookup?search=${value}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setTestRefs(data?.data || []);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }, 300);
   };
 
   return (
@@ -118,15 +142,14 @@ export const TestRefCraeteForm = ({
             <X size={24} />
           </button>
         </div>
+
         <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-100">
           {/* Header with gradient */}
-
           {/* Form */}
           <form onSubmit={handleSubmit} className="p-6 space-y-5">
-            {/* Reference Name */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                Reference Name
+                Test Panel Name
                 <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -147,9 +170,9 @@ export const TestRefCraeteForm = ({
                 </div>
                 <input
                   type="text"
-                  name="refName"
+                  name="panelName"
                   placeholder="e.g., Complete Blood Count"
-                  value={formData.refName}
+                  value={formData.panelName}
                   onChange={handleChange}
                   className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out"
                   required
@@ -160,7 +183,7 @@ export const TestRefCraeteForm = ({
             {/* Test Name */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                Test Name
+                Ref Name
                 <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -181,52 +204,146 @@ export const TestRefCraeteForm = ({
                 </div>
                 <input
                   type="text"
-                  name="testName"
-                  placeholder="e.g., Hemoglobin"
-                  value={formData.testName}
+                  name="refPanelName"
+                  placeholder="e.g: l.profile"
+                  value={formData.refPanelName}
                   onChange={handleChange}
                   className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out"
                   required
                 />
               </div>
             </div>
+            {/* Reference Name */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                Search Test reference
+                <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <div className="col-span-2 border-2 border-teal-400 rounded-lg flex items-center p-2 bg-gray-50 transition-all focus-within:border-teal-600 focus-within:bg-white focus-within:ring-2 focus-within:ring-teal-200">
+                  <input
+                    type="text"
+                    placeholder="Search testRefs..."
+                    onChange={handleRefSearch}
+                    onBlur={() => {
+                      setTimeout(() => {
+                        setTestRefs([]);
+                      }, 200);
+                    }}
+                    className="text-gray-700 px-3 focus:outline-none w-full bg-transparent"
+                  />
+                  <Search size={20} className="text-teal-600 ml-2" />
+                </div>
+
+                {testRefs?.length > 0 && (
+                  <div className="absolute top-full left-0 w-full bg-amber-300 z-10 border border-rose-300 rounded-lg shadow-xl mt-1 overflow-hidden">
+                    <div className="custom-scroll max-h-64 overflow-y-auto">
+                      <table className="w-full">
+                        <thead className="bg-teal-50 sticky top-0">
+                          <tr>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-teal-800 uppercase tracking-wider">
+                              Test Name
+                            </th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-teal-800 uppercase tracking-wider">
+                              Ref name
+                            </th>
+                            <th className="px-4 py-2 text-left text-xs font-medium text-teal-800 uppercase tracking-wider">
+                              Priority
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                          {testRefs?.map((ref, i) => (
+                            <tr
+                              onClick={() => {
+                                setSelectedRefs((prev) => {
+                                  // prevent duplicate
+                                  if (
+                                    prev.some((item) => item._id === ref._id)
+                                  ) {
+                                    return prev;
+                                  }
+
+                                  return [...prev, ref];
+                                });
+                                setTestRefs([]);
+                              }}
+                              key={i}
+                              className="hover:bg-teal-50 cursor-pointer transition-colors"
+                            >
+                              <td className="px-4 py-2 text-sm text-teal-600">
+                                {ref?.testName}
+                              </td>
+                              <td className="px-4 py-2 text-sm font-medium text-teal-700">
+                                {ref?.refName}
+                              </td>
+                              <td className="px-4 py-2 text-sm text-gray-500">
+                                {ref?.priority}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Test Name */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                Selected Items
+                <span className="text-red-500">*</span>
+              </label>
+              <div className="relative min-h-40 bg-amber-50 border rounded p-2">
+                <table className="w-full">
+                  <tbody>
+                    {selectedRefs?.map((ref, i) => (
+                      <tr
+                        key={i}
+                        className="hover:bg-teal-50 cursor-pointer transition-colors"
+                      >
+                        <td className="px-4 py-2 text-sm font-medium text-teal-600 bg-amber-200">
+                          {i + 1}.
+                        </td>
+                        <td className="px-4 py-2 text-sm font-medium text-teal-600 bg-amber-200">
+                          {ref?.testName}
+                        </td>
+                        <td className="px-4 py-2 text-sm font-medium text-teal-600 bg-amber-200">
+                          {ref?.refName}
+                        </td>
+                        <td className="px-4 py-2 text-sm font-medium text-teal-600 bg-amber-200">
+                          {ref?.unit}
+                        </td>
+                        <td className="px-4 py-2 text-sm font-medium text-teal-600 bg-amber-200">
+                          {ref?.referenceRange}
+                        </td>
+                        <td className="px-4 py-2 text-sm font-medium text-teal-600 bg-amber-200">
+                          {ref?.priority}
+                        </td>
+                        <td className="px-4 text-sm font-medium text-teal-600 bg-amber-200">
+                          <span
+                            className="text-xl mt-1 border inline-block text-red-500 rounded-sm"
+                            title="remove"
+                            onClick={() =>
+                              setSelectedRefs((prev) =>
+                                prev.filter((item) => item !== ref),
+                              )
+                            }
+                          >
+                            <X />
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
 
             {/* Unit and Priority Row */}
             <div className="grid grid-cols-2 gap-4">
-              {/* Unit */}
-              <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                  Unit
-                  <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <svg
-                      className="h-5 w-5 text-gray-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"
-                      />
-                    </svg>
-                  </div>
-                  <input
-                    type="text"
-                    name="unit"
-                    placeholder="e.g., g/dL"
-                    value={formData.unit}
-                    onChange={handleChange}
-                    className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out"
-                    required
-                  />
-                </div>
-              </div>
-
               {/* Priority */}
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-gray-700">
@@ -254,49 +371,12 @@ export const TestRefCraeteForm = ({
                     placeholder="1-10"
                     value={formData.priority}
                     onChange={handleChange}
-                    min="0"
+                    min="1"
                     max="100"
                     className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out"
                   />
                 </div>
               </div>
-            </div>
-
-            {/* Reference Range */}
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                Reference Range
-                <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <div className="absolute top-3 left-3 pointer-events-none">
-                  <svg
-                    className="h-5 w-5 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
-                </div>
-                <textarea
-                  name="referenceRange"
-                  placeholder="e.g., 13.5 - 17.5 g/dL (men)&#10;12.0 - 15.5 g/dL (women)"
-                  value={formData.referenceRange}
-                  onChange={handleChange}
-                  // rows="4"
-                  className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out resize-none"
-                  required
-                />
-              </div>
-              <p className="text-xs text-gray-500 mt-1">
-                You can add multiple ranges, one per line
-              </p>
             </div>
 
             {/* Divider */}
@@ -328,7 +408,7 @@ export const TestRefCraeteForm = ({
                     d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
                   />
                 </svg>
-                Save Test Reference
+                Save Test Panel
               </button>
             </div>
           </form>

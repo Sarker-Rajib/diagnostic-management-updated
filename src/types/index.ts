@@ -205,3 +205,21 @@ export interface IServiceData {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface ITestPanel {
+  _id?: string;
+  refPanelName: string;
+  panelName: string;
+  tests: [string];
+  priority: number;
+  isPanel: boolean;
+}
+
+export interface ITestPanelFull {
+  _id?: string;
+  refPanelName: string;
+  panelName: string;
+  tests: [ITestRefData];
+  priority: number;
+  isPanel: boolean;
+}

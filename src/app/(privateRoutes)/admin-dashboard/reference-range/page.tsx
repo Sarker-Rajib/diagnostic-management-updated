@@ -67,11 +67,19 @@ export default function RefRangePage() {
 
         <button
           onClick={() => setIsOpen(true)}
-          className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white py-2 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1"
+          className="flex border border-yellow-400 items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white py-2 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1"
         >
           <span className="text-lg font-semibold">Register Reference </span>
           <Pencil size={20} className="text-white" />
         </button>
+      </div>
+      <div className="text-end mb-2">
+        <Link
+          href={`/admin-dashboard/reference-range/panel-reference`}
+          className="items-center border border-yellow-400 text-lg inline-block bg-teal-600 hover:bg-teal-700 text-white py-2 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1"
+        >
+          Panel Reference
+        </Link>
       </div>
 
       {/* ref List Card */}
