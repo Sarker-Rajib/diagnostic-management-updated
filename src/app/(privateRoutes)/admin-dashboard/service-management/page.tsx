@@ -147,7 +147,7 @@ export default function ServiceManagaPage() {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="py-1 px-4 text-left font-semibold text-gray-700 text-sm border-b">
-                    SL
+                    Service Code
                   </th>
                   <th className="py-1 px-4 text-left font-semibold text-gray-700 text-sm border-b">
                     Service Name
@@ -170,9 +170,7 @@ export default function ServiceManagaPage() {
                   <th className="py-1 px-4 text-left font-semibold text-gray-700 text-sm border-b">
                     Panel
                   </th>
-                  <th className="py-1 px-4 text-left font-semibold text-gray-700 text-sm border-b">
-                    Service Code
-                  </th>
+
                   <th className="py-1 px-4 text-center font-semibold text-gray-700 text-sm border-b">
                     Actions
                   </th>
@@ -184,8 +182,8 @@ export default function ServiceManagaPage() {
                     key={idx}
                     className="transition-all duration-200 hover:bg-blue-50 hover:shadow-sm"
                   >
-                    <td className="py-1 px-4 text-gray-800 font-medium">
-                      {idx + 1}
+                    <td className="py-1 px-4 text-gray-700 font-mono text-sm">
+                      {item.serviceCode}
                     </td>
                     <td className="py-1 px-4 text-gray-800 font-medium">
                       {item.serviceName}
@@ -204,9 +202,7 @@ export default function ServiceManagaPage() {
                     <td className="py-1 px-4 text-gray-700">
                       {item?.panel ? "Yes" : "No"}
                     </td>
-                    <td className="py-1 px-4 text-gray-700 font-mono text-sm">
-                      {item.serviceCode}
-                    </td>
+
                     <td className="py-1 px-4 text-center">
                       <Link
                         href={`/admin-dashboard/service-management/${item._id}`}

@@ -40,7 +40,7 @@ export default function ServiceManageForm({
     serviceName: "",
     testName: "",
     price: 0,
-    division: constants.department[0],
+    division: constants.division[0],
     department: constants.department[0],
     reportGroup: constants.reportGroup[0],
     testSample: constants.testSample[0],
@@ -84,7 +84,7 @@ export default function ServiceManageForm({
           division: constants.division[0],
           department: constants.department[0],
           reportGroup: constants.reportGroup[0],
-          testSample: constants.reportGroup[0],
+          testSample: constants.testSample[0],
           panel: false,
         });
       } else {

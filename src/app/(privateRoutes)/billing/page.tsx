@@ -158,7 +158,7 @@ export default function BillPage() {
 
     const token = await accessToken();
 
-    console.log(payload, token);
+    console.log(payload);
 
     try {
       const billResponse = await fetch(`${envConfig.baseApi}/bill`, {

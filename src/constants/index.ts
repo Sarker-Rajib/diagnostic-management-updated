@@ -31,6 +31,7 @@ export const constants = {
     "Histopathology & Cytopathology",
     "Microbiology",
     "Immunology",
+    "Ultrasonogram",
   ],
 
   reportGroup: [

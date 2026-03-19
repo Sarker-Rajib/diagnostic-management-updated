@@ -15,7 +15,20 @@ export default function UltrasonographyReportPage() {
   };
 
   return (
-    <div>
+    <div className="p-2 border border-purple-600 min-h-screen">
+      <div className="grid grid-cols-3">
+        <div>
+          <label>Input Bill id</label>
+          <input
+            type="number"
+            name="billID"
+            // value={patient.email}
+            // onChange={handleChange}
+            className="w-full px-4 py-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+            placeholder="bill id"
+          />
+        </div>
+      </div>
       {/* ----- */}
       <form onSubmit={handleSubmit(onSubmit)}>
         <Controller
@@ -36,16 +49,6 @@ export default function UltrasonographyReportPage() {
         />
         <button type="submit">Submit</button>
       </form>
-      {/* ----- */}
-      <div className="min-h-screen bg-linear-to-br from-teal-50 to-blue-50 p-6 flex items-center justify-center">
-        <div className="w-full max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold mb-2 text-teal-900">
-              Ultra report
-            </h1>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

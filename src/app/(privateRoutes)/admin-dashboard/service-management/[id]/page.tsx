@@ -271,6 +271,34 @@ export default function ServiceUpdatePage({}) {
               </label>
             </div>
           </div>
+
+          <div>
+            <label className="text-teal-600 block text-sm font-medium">
+              Specimen Type
+            </label>
+            <select
+              name="testSample"
+              value={service?.testSample}
+              onChange={(e) => {
+                setFormData({
+                  ...formData,
+                  testSample: e.target.value,
+                });
+                setService({
+                  ...service!,
+                  testSample: e.target.value,
+                });
+              }}
+              className="mt-1 w-full border border-sky-500 rounded px-3 py-2"
+              required
+            >
+              {constants.testSample.map((grp) => (
+                <option key={grp} value={grp}>
+                  {grp}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className="text-end pt-3">
