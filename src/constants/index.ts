@@ -45,5 +45,17 @@ export const constants = {
     "Pus_Culture",
     "Stool_Culture",
     "CSF",
+    "Ultrasonogram W/A",
+  ],
+
+  testSample: [
+    "Blood",
+    "Urine",
+    "Stool",
+    "CSF",
+    "Plueral Fluid",
+    "Ascitic Fluid",
+    "Synovial Fluid",
+    "N / A",
   ],
 };

@@ -43,6 +43,7 @@ export default function ServiceManageForm({
     division: constants.department[0],
     department: constants.department[0],
     reportGroup: constants.reportGroup[0],
+    testSample: constants.testSample[0],
     panel: false,
   });
 
@@ -75,7 +76,7 @@ export default function ServiceManageForm({
       const data = await response.json();
 
       if (data.success) {
-        toast.success(data.message || "Patient created successfully");
+        toast.success(data.message || "Service created successfully");
         setFormData({
           serviceName: "",
           testName: "",
@@ -83,14 +84,15 @@ export default function ServiceManageForm({
           division: constants.division[0],
           department: constants.department[0],
           reportGroup: constants.reportGroup[0],
+          testSample: constants.reportGroup[0],
           panel: false,
         });
       } else {
-        toast.error(`Error creating patient: ${data?.message}`);
+        toast.error(`Error creating Service: ${data?.message}`);
       }
     } catch (error) {
-      console.error("Error creating patient:", error);
-      toast.error("Error creating patient");
+      console.error("Error creating Service:", error);
+      toast.error("Error creating Service");
     } finally {
       if (setReload) {
         setReload(!reload);
@@ -163,7 +165,7 @@ export default function ServiceManageForm({
               </label>
               <select
                 name="division"
-                value={formData.reportGroup}
+                value={formData.division}
                 onChange={handleChange}
                 className="mt-1 w-full border border-gray-300 rounded px-3 py-2"
                 required
@@ -253,6 +255,25 @@ export default function ServiceManageForm({
                   No
                 </label>
               </div>
+            </div>
+
+            <div>
+              <label className="text-teal-600 block text-sm font-medium">
+                Specimen Type
+              </label>
+              <select
+                name="testSample"
+                value={formData.testSample}
+                onChange={handleChange}
+                className="mt-1 w-full border border-gray-300 rounded px-3 py-2"
+                required
+              >
+                {constants.testSample.map((grp) => (
+                  <option key={grp} value={grp}>
+                    {grp}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
           <div className="text-end pt-3">

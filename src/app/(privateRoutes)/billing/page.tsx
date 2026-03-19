@@ -25,6 +25,7 @@ export default function BillPage() {
   const [selectedServices, setSelectedServices] = useState<IServiceItem[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<IPatient | null>(null);
   const [paidAmount, setPaidAmount] = useState<number>(0);
+  const [refBy, setRefBy] = useState<string>("");
 
   const subtotal = useMemo(() => {
     return selectedServices.reduce((sum, s) => sum + s.price, 0);
@@ -144,6 +145,7 @@ export default function BillPage() {
     const payload = {
       patientInfo: selectedPatient?._id, // Types.ObjectId;
       pId: selectedPatient?.pId, // string;
+      refBy,
       services: selectedServices, // Array<IServiceBill>;
       subTotal: subtotal, // number;
       discount: discount, // number;
@@ -325,6 +327,17 @@ export default function BillPage() {
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="border bg-amber-50 p-1">
+          <label htmlFor="refBy">Referred By</label>
+          <input
+            type="text"
+            name=""
+            id="refBy"
+            className="w-full bg-white border p-1 rounded"
+            onChange={(e) => setRefBy(e.target.value)}
+          />
         </div>
 
         {/* Main Billing Section */}

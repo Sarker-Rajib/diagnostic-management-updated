@@ -200,6 +200,7 @@ export interface IServiceData {
   division: (typeof constants.division)[number];
   department: (typeof constants.department)[number];
   reportGroup: (typeof constants.reportGroup)[number];
+  testSample: (typeof constants.testSample)[number];
   panel: boolean;
   serviceCode?: number;
   createdAt?: string;
