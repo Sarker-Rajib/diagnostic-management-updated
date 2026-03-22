@@ -66,6 +66,15 @@ export default function AdminDashPage() {
             <Database size={20} />
             Reference Ranges
           </Link>
+
+          <Link
+            className="bg-white/10 text-nowrap hover:bg-white/20 text-white font-medium py-3 px-6 rounded-xl border border-white/20
+                 transition-all duration-300 transform hover:scale-[1.02] backdrop-blur-sm
+                 flex items-center justify-center gap-2"
+            href="/admin-dashboard/usg-template"
+          >
+            USG Template
+          </Link>
         </div>
       </div>
     </div>

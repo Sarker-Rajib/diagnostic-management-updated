@@ -12,6 +12,7 @@ import Highlight from "@tiptap/extension-highlight";
 import TextAlign from "@tiptap/extension-text-align";
 import {
   BubbleMenu,
+  FloatingMenu,
   BubbleMenu as TiptopBubbleMenu,
 } from "@tiptap/react/menus";
 import { Toggle } from "./ui/toggle";
@@ -74,17 +75,15 @@ const TiptapEditor = ({
   });
 
   return (
-    <>
+    <div className="p-1 rounded-lg bg-white border border-cyan-600">
       {editor && (
-        <>
+        <div className="pt-1">
           <ToolBar editor={editor} />
           <BubbleMenu editor={editor} />
-        </>
+        </div>
       )}
       <EditorContent editor={editor} />
-      {/* <FloatingMenu editor={editor}>This is the floating menu</FloatingMenu> */}
-      {/* <BubbleMenu editor={editor}>This is the bubble menu</BubbleMenu> */}
-    </>
+    </div>
   );
 };
 
