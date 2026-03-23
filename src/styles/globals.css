@@ -149,3 +149,20 @@ h5,
 h6 {
   font-size: 1rem;
 }
+
+/* Unordered List */
+ul {
+  list-style-type: disc; /* disc | circle | square | none */
+  padding-left: 20px;
+}
+
+/* Ordered List */
+ol {
+  list-style-type: decimal; /* decimal | lower-alpha | upper-roman etc */
+  padding-left: 20px;
+}
+
+/* List Items */
+li {
+  margin-bottom: 6px;
+}

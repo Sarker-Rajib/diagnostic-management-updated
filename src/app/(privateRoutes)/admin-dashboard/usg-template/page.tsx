@@ -141,12 +141,27 @@ export default function TemplatePage() {
     }
   };
 
-  const { control, handleSubmit } = useForm({
+  // -----------------------------------------------------
+  const { control, handleSubmit, reset } = useForm({
     defaultValues: {
-      title: `${isEdit ? isEdit?.title : ""}`,
-      template: `${isEdit ? isEdit?.template : ""}`,
+      title: "",
+      template: "",
     },
   });
+  useEffect(() => {
+    if (isEdit) {
+      reset({
+        title: isEdit.title || "",
+        template: isEdit.template || "",
+      });
+    } else {
+      reset({
+        title: "",
+        template: "",
+      });
+    }
+  }, [isEdit, reset]);
+  // -----------------------------------------------------
 
   const onSubmit = async (data: any) => {
     if (!data.title.trim() || !data.template.trim()) return;
@@ -395,7 +410,10 @@ export default function TemplatePage() {
                 <div className="flex justify-end gap-3 pt-2">
                   <button
                     type="button"
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => {
+                      setIsOpen(false);
+                      setIsEdit(null);
+                    }}
                     disabled={loading}
                     className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >

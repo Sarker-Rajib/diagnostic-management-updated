@@ -45,6 +45,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useEffect } from "react";
 
 const TiptapEditor = ({
   content,
@@ -73,6 +74,12 @@ const TiptapEditor = ({
       onChange?.(editor.getHTML());
     },
   });
+
+  useEffect(() => {
+    if (editor && content !== editor.getHTML()) {
+      editor.commands.setContent(content || "");
+    }
+  }, [content, editor]);
 
   return (
     <div className="p-1 rounded-lg bg-white border border-cyan-600">
