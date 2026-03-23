@@ -1,45 +1,28 @@
 "use client";
 
+import FixedPop from "@/components/fixedPop";
+import TiptapEditor from "@/components/TextEditor";
+import { envConfig } from "@/config/envConfig";
+import { IMeta } from "@/types";
+import { IUSGTemplate } from "@/types/usgReport";
+import {
+  ChevronLeft,
+  ChevronRight,
+  DeleteIcon,
+  Pencil,
+  Search,
+  Users,
+} from "lucide-react";
 import { useState, useEffect } from "react";
-// import { motion, AnimatePresence } from "framer-motion";
-
-interface TemplateItem {
-  id?: string;
-  templateTitle: string;
-  templateData: string;
-}
-
-// API Configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://your-api.com";
+import { Controller, useForm } from "react-hook-form";
+import { PropagateLoader } from "react-spinners";
+import { toast } from "sonner";
 
 // API Service
 const apiService = {
-  // GET all templates (A)
-  getAllTemplates: async (): Promise<TemplateItem[]> => {
+  createTemplate: async (template: IUSGTemplate) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/templates`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch templates: ${response.status}`);
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error("Error fetching templates:", error);
-      throw error;
-    }
-  },
-
-  // POST create new template (X)
-  createTemplate: async (template: TemplateItem): Promise<TemplateItem> => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/templates`, {
+      const response = await fetch(`${envConfig.baseApi}/usg-template/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -60,18 +43,18 @@ const apiService = {
   },
 
   // PUT update template (Y)
-  updateTemplate: async (
-    id: string,
-    template: TemplateItem,
-  ): Promise<TemplateItem> => {
+  updateTemplate: async (id: string, template: IUSGTemplate) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/templates/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${envConfig.baseApi}/usg-template/update/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(template),
         },
-        body: JSON.stringify(template),
-      });
+      );
 
       if (!response.ok) {
         throw new Error(`Failed to update template: ${response.status}`);
@@ -86,14 +69,17 @@ const apiService = {
   },
 
   // DELETE template (Z)
-  deleteTemplate: async (id: string): Promise<void> => {
+  deleteTemplate: async (id: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/templates/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${envConfig.baseApi}/usg-template/delete/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
 
       if (!response.ok) {
         throw new Error(`Failed to delete template: ${response.status}`);
@@ -106,117 +92,83 @@ const apiService = {
 };
 
 export default function TemplatePage() {
-  const [data, setData] = useState<TemplateItem[]>([]);
+  const [data, setData] = useState<IUSGTemplate[]>();
   const [isOpen, setIsOpen] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [currentId, setCurrentId] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  // reload state
+  const [reload, setReload] = useState(true);
+  // edit / update states
+  const [isEdit, setIsEdit] = useState<IUSGTemplate | null>(null);
+  const [currentId, setCurrentId] = useState<string | null>(null);
+  // delete states
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
-  const [form, setForm] = useState<TemplateItem>({
-    templateTitle: "",
-    templateData: "",
-  });
+  // update states
+  const [meta, setMeta] = useState<IMeta | null>(null);
+  const [searchText, setSearchText] = useState("");
+  const [page, setPage] = useState<number>(1);
+  const [limit, setLimit] = useState<number>(10);
 
   // Load all templates on mount (A)
   useEffect(() => {
     loadTemplates();
-  }, []);
+  }, [reload]);
 
   const loadTemplates = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      setError(null);
-      const templates = await apiService.getAllTemplates(); // A - Get all templates
-      setData(templates);
-    } catch (err) {
-      setError("Failed to load templates. Please try again.");
-      console.error(err);
+      const response = await fetch(`${envConfig.baseApi}/usg-template/all`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        toast.error("Something went wrong");
+      }
+
+      const result = await response.json();
+
+      setMeta(result.data.meta);
+      setData(result.data.templates);
+      toast.success("Data Loaded successfully!");
+    } catch (error) {
+      console.error("Error fetching templates:", error);
+      // throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  // Filter templates based on search
-  const filteredData = data.filter(
-    (item) =>
-      item.templateTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.templateData.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  const { control, handleSubmit } = useForm({
+    defaultValues: {
+      title: `${isEdit ? isEdit?.title : ""}`,
+      template: `${isEdit ? isEdit?.template : ""}`,
+    },
+  });
 
-  // Extract variables from template content
-  const extractVariables = (text: string) => {
-    const matches = text.match(/{{(.*?)}}/g);
-    return matches
-      ? matches.map((m) => m.replace(/[{}]/g, "")).join(", ")
-      : "No variables";
-  };
-
-  // Count variables
-  const getVariableCount = (text: string) => {
-    const matches = text.match(/{{(.*?)}}/g);
-    return matches ? matches.length : 0;
-  };
-
-  const openAddModal = () => {
-    setForm({ templateTitle: "", templateData: "" });
-    setIsEdit(false);
-    setCurrentId(null);
-    setIsOpen(true);
-  };
-
-  const openEditModal = (id: string) => {
-    const template = data.find((item) => item.id === id);
-    if (template) {
-      setForm({
-        templateTitle: template.templateTitle,
-        templateData: template.templateData,
-      });
-      setCurrentId(id);
-      setIsEdit(true);
-      setIsOpen(true);
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!form.templateTitle.trim() || !form.templateData.trim()) return;
+  const onSubmit = async (data: any) => {
+    if (!data.title.trim() || !data.template.trim()) return;
 
     try {
-      setSubmitting(true);
-      setError(null);
+      setLoading(true);
 
       if (isEdit && currentId) {
-        // Y - Update template
-        const updatedTemplate = await apiService.updateTemplate(
-          currentId,
-          form,
-        );
-        setData(
-          data.map((item) => (item.id === currentId ? updatedTemplate : item)),
-        );
-        setSuccessMessage("Template updated successfully!");
+        await apiService.updateTemplate(currentId, data);
+        setCurrentId(null);
+        setIsEdit(null);
       } else {
-        // X - Create new template
-        const newTemplate = await apiService.createTemplate(form);
-        setData([...data, newTemplate]);
-        setSuccessMessage("Template created successfully!");
+        const res = await apiService.createTemplate(data);
+        if (res) toast.success("Data saved successfully");
       }
 
       setIsOpen(false);
-
-      // Clear success message after 3 seconds
-      setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err) {
-      setError(
-        isEdit ? "Failed to update template." : "Failed to create template.",
-      );
       console.error(err);
     } finally {
-      setSubmitting(false);
+      setLoading(false);
+      setReload(!reload);
     }
   };
 
@@ -224,602 +176,326 @@ export default function TemplatePage() {
     if (!deleteConfirm) return;
 
     try {
-      setSubmitting(true);
-      setError(null);
-
-      // Z - Delete template
+      setLoading(true);
       await apiService.deleteTemplate(deleteConfirm);
-      setData(data.filter((item) => item.id !== deleteConfirm));
-      setSuccessMessage("Template deleted successfully!");
-
-      // Clear success message after 3 seconds
-      setTimeout(() => setSuccessMessage(null), 3000);
+      toast.success("Data deleted successfully!");
     } catch (err) {
-      setError("Failed to delete template.");
       console.error(err);
     } finally {
-      setSubmitting(false);
+      setLoading(false);
       setDeleteConfirm(null);
+      setReload(!reload);
     }
   };
 
-  // Show loading state
-  if (loading) {
-    return (
-      <div className="min-h-screen bg--to-br from-gray-50 via-white to-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
-          <p className="mt-4 text-gray-600">Loading templates...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg--to-br from-gray-50 via-white to-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        {/* Success Message */}
-        {/* // <AnimatePresence> */}
-        {successMessage && (
-          // <motion.div
-          //   initial={{ opacity: 0, y: -20 }}
-          //   animate={{ opacity: 1, y: 0 }}
-          //   exit={{ opacity: 0, y: -20 }}
-          //   className="fixed top-4 right-4 z-50 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg shadow-lg"
-          // >
-          <div className="flex items-center gap-2">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-            {successMessage}
-          </div>
-          // /* </motion.div> */}
-        )}
-        {/* </AnimatePresence> */}
-
-        {/* Error Message */}
-        {error && (
-          <div className="mb-4 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
-            <div className="flex items-center gap-2">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              {error}
-              <button
-                onClick={() => setError(null)}
-                className="ml-auto text-red-600 hover:text-red-800"
-              >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
-          <div className="flex items-center gap-3">
-            <div className="bg--to-br from-blue-500 to-indigo-600 p-3 rounded-2xl shadow-lg">
-              <svg
-                className="w-6 h-6 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
-              </svg>
-            </div>
+    <div className="max-w-400 mx-auto border border-white rounded-xl">
+      {/* data table */}
+      <div className="bg-white rounded-xl">
+        {/* List Header */}
+        <div className="sticky top-1">
+          <div className="bg-teal-600 rounded-t-xl px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 ">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold bg--to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                Template Studio
-              </h1>
-              <p className="text-gray-500 mt-1 text-sm">
-                Manage your message templates with dynamic variables
-              </p>
-            </div>
-          </div>
-
-          <button
-            onClick={openAddModal}
-            disabled={submitting}
-            className="group relative px-5 py-2.5 bg--to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2 font-medium text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <svg
-              className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-            <span>Create Template</span>
-          </button>
-        </div>
-
-        {/* Search & Stats Bar */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200/80 p-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="relative flex-1 max-w-md">
-            <svg
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-            <input
-              type="text"
-              placeholder="Search by title or content..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all bg-gray-50/50 text-sm"
-            />
-          </div>
-          <div className="flex items-center gap-3 text-sm">
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 rounded-full">
-              <svg
-                className="w-3.5 h-3.5 text-blue-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-              <span className="text-gray-700 font-medium">
-                {data.length} Total
-              </span>
-            </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 rounded-full">
-              <svg
-                className="w-3.5 h-3.5 text-emerald-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
-                />
-              </svg>
-              <span className="text-gray-700 font-medium">
-                {data.reduce(
-                  (sum, t) =>
-                    sum + (t.templateData.match(/{{(.*?)}}/g)?.length || 0),
-                  0,
-                )}{" "}
-                Variables
-              </span>
-            </div>
-            <button
-              onClick={loadTemplates}
-              disabled={loading}
-              className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-              title="Refresh"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        {/* Templates Grid */}
-        {filteredData.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-12 text-center">
-            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg
-                className="w-10 h-10 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-1">
-              No templates found
-            </h3>
-            <p className="text-gray-500 text-sm mb-4">
-              {searchTerm
-                ? "Try adjusting your search"
-                : "Create your first template to get started"}
-            </p>
-            {!searchTerm && (
+              <h2 className="text-xl font-semibold text-white">
+                USG Template List
+                {meta && (
+                  <span className="text-sm">( Total : {meta.total} )</span>
+                )}
+              </h2>
               <button
-                onClick={openAddModal}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+                className="px-5 py-1 bg-linear-to-r from-green-600 border to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-medium transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                onClick={() => setIsOpen(true)}
               >
-                + Create Template
+                Create Template
               </button>
-            )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filteredData.map((item, index) => {
-              const variableCount = getVariableCount(item.templateData);
+            </div>
 
-              return (
-                // <motion.div
-                //   key={item.id || index}
-                //   initial={{ opacity: 0, y: 20 }}
-                //   animate={{ opacity: 1, y: 0 }}
-                //   transition={{ duration: 0.3, delay: index * 0.05 }}
-                //   className="group bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-200/80 hover:border-gray-300 transition-all duration-300 overflow-hidden"
-                // >
-                <div className="p-5">
-                  {/* Title Section */}
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 text-lg line-clamp-1">
-                        {item.templateTitle}
-                      </h3>
-                      {variableCount > 0 && (
-                        <div className="flex items-center gap-1 mt-1">
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-50 text-purple-600 text-xs rounded-full">
-                            <svg
-                              className="w-3 h-3"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"
-                              />
-                            </svg>
-                            {variableCount}{" "}
-                            {variableCount === 1 ? "variable" : "variables"}
-                          </span>
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              {/* Search Box */}
+              <div className="relative grow sm:grow-0 sm:w-64">
+                <input
+                  type="text"
+                  placeholder="Search template..."
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  className="text-gray-700 w-full pl-4 pr-10 py-2 bg-white rounded-lg border focus:ring-2 focus:ring-teal-300"
+                />
+                <Search
+                  size={20}
+                  className="absolute right-3 top-2.5 text-teal-600"
+                />
+              </div>
+
+              {/* Pagination Controls */}
+              <div className="flex gap-1">
+                {/* Show pagination only when NOT searching and meta exists */}
+                {!searchText.trim() && meta && (
+                  <>
+                    {/* Previous Button */}
+                    <button
+                      disabled={page === 1}
+                      onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                      title="Previous Page"
+                      className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <ChevronLeft size={20} className="text-white" />
+                    </button>
+
+                    {/* Page Info */}
+                    <span className="p-2 bg-green-600/70 text-white rounded-lg transition">
+                      {meta.page} / {meta.totalPages}
+                    </span>
+
+                    {/* Next Button */}
+                    <button
+                      disabled={page === meta.totalPages}
+                      onClick={() =>
+                        setPage((prev) => Math.min(prev + 1, meta.totalPages))
+                      }
+                      title="Next Page"
+                      className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <ChevronRight size={20} className="text-white" />
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4">
+          {/* Patients Table */}
+          {data?.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="mx-auto w-24 h-24 bg-teal-100 rounded-full flex items-center justify-center mb-4">
+                <Users size={40} className="text-teal-600" />
+              </div>
+              <p className="text-xl font-medium text-gray-600">
+                No Templates were found
+              </p>
+              <button
+                onClick={() => setIsOpen(true)}
+                className="mt-4 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg transition"
+              >
+                Create Template
+              </button>
+            </div>
+          ) : (
+            <div className="overflow-x-auto rounded-lg border border-gray-200">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      #
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Title
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200 text-slate-500">
+                  {data?.map((item, i) => (
+                    <tr key={i}>
+                      <td className="px-6 py-4 whitespace-nowrap">{i + 1}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {item.title}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              setIsEdit(item);
+                              setCurrentId(item?._id!);
+                              setIsOpen(true);
+                            }}
+                            title="Update data"
+                            className="p-2 bg-teal-100 hover:bg-teal-200 rounded-lg text-teal-600 transition cursor-pointer"
+                          >
+                            <Pencil size={18} />
+                          </button>
+                          <button
+                            onClick={() => setDeleteConfirm(item?._id!)}
+                            title="Delete"
+                            className="p-2 bg-blue-100 hover:bg-blue-200 rounded-lg text-blue-600 transition"
+                          >
+                            <DeleteIcon size={18} />
+                          </button>
                         </div>
-                      )}
-                    </div>
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={() => item.id && openEditModal(item.id)}
-                        disabled={submitting}
-                        className="p-1.5 text-gray-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors disabled:opacity-50"
-                        title="Edit"
-                      >
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                          />
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => item.id && setDeleteConfirm(item.id)}
-                        disabled={submitting}
-                        className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
-                        title="Delete"
-                      >
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Content Preview */}
-                  <div className="bg-gray-50 rounded-xl p-3 mb-4 border border-gray-100">
-                    <p className="text-gray-600 text-sm line-clamp-3 font-mono">
-                      {item.templateData}
-                    </p>
-                  </div>
-
-                  {/* Variables Preview */}
-                  {variableCount > 0 && (
-                    <div className="mb-3">
-                      <p className="text-xs text-gray-400 mb-1">Variables:</p>
-                      <div className="flex flex-wrap gap-1">
-                        {item.templateData
-                          .match(/{{(.*?)}}/g)
-                          ?.map((varMatch, idx) => (
-                            <span
-                              key={idx}
-                              className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-50 text-blue-600 text-xs rounded-md"
-                            >
-                              <svg
-                                className="w-2.5 h-2.5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M13 10V3L4 14h7v7l9-11h-7z"
-                                />
-                              </svg>
-                              {varMatch.replace(/[{}]/g, "")}
-                            </span>
-                          ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-                // /* </motion.div> */
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* Modal Overlay */}
-      {/* <AnimatePresence> */}
-      {isOpen && (
-        // <motion.div
-        //   initial={{ opacity: 0 }}
-        //   animate={{ opacity: 1 }}
-        //   exit={{ opacity: 0 }}
-        //   className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 p-4"
-        //   onClick={() => !submitting && setIsOpen(false)}
-        // >
-        //   <motion.div
-        //     initial={{ scale: 0.95, opacity: 0 }}
-        //     animate={{ scale: 1, opacity: 1 }}
-        //     exit={{ scale: 0.95, opacity: 0 }}
-        //     onClick={(e) => e.stopPropagation()}
-        //     className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden"
-        //   >
-        <>
-          <div className="bg--to-r from-blue-600 to-indigo-600 px-6 py-4">
-            <h2 className="text-xl font-semibold text-white">
-              {isEdit ? "Edit Template" : "Create Template"}
-            </h2>
-            <p className="text-blue-100 text-sm mt-1">
-              {isEdit
-                ? "Modify your template content"
-                : "Add a new message template"}
-            </p>
-          </div>
-
-          <div className="p-6">
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Template Title
-              </label>
-              <input
-                type="text"
-                placeholder="e.g., Welcome Email"
-                value={form.templateTitle}
-                onChange={(e) =>
-                  setForm({ ...form, templateTitle: e.target.value })
-                }
-                disabled={submitting}
-                className="w-full border border-gray-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none p-3 rounded-xl transition-all disabled:bg-gray-50 disabled:cursor-not-allowed"
-              />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
+          )}
 
-            <div className="mb-5">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Template Content
-              </label>
-              <textarea
-                placeholder="Use {{variable}} for dynamic content&#10;Example: Hello {{name}}, welcome!"
-                value={form.templateData}
-                onChange={(e) =>
-                  setForm({ ...form, templateData: e.target.value })
-                }
-                rows={5}
-                disabled={submitting}
-                className="w-full border border-gray-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none p-3 rounded-xl resize-none font-mono text-sm disabled:bg-gray-50 disabled:cursor-not-allowed"
-              />
-              <p className="text-xs text-gray-400 mt-2">
-                <span className="font-medium">Tip:</span> Use {"{{variable}}"}{" "}
-                syntax for dynamic content
+          {loading && (
+            <div className="py-12 flex justify-center">
+              <div className="text-center">
+                <PropagateLoader color="#0d9488" />
+                <p className="mt-4 text-gray-600">Loading template...</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      {/*  */}
+      {isOpen && (
+        <FixedPop>
+          <div className="max-w-4xl mx-auto bg-white/55 rounded-lg overflow-hidden">
+            <div className="bg-linear-to-b to-teal-600 from-sky-700 px-6 py-4">
+              <h2 className="text-xl font-semibold text-white">
+                {isEdit ? "Edit Template" : "Create Template"}
+              </h2>
+              <p className="text-blue-100 text-sm mt-1">
+                {isEdit
+                  ? "Modify your template content"
+                  : "Add a new message template"}
               </p>
             </div>
-
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setIsOpen(false)}
-                disabled={submitting}
-                className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="px-5 py-2.5 bg--to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-medium transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-              >
-                {submitting && (
-                  <svg
-                    className="animate-spin h-4 w-4 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
+            <div className="p-3">
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <Controller
+                  name="title"
+                  control={control}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      type="text"
+                      placeholder="USG of W/A ..."
+                      disabled={loading}
+                      className="w-full border border-sky-500 p-3 rounded-xl"
+                    />
+                  )}
+                />
+                <div className="pb-2"></div>
+                <Controller
+                  name="template"
+                  control={control}
+                  render={({ field, fieldState }) => {
+                    return (
+                      <div>
+                        <TiptapEditor
+                          content={field.value}
+                          onChange={field.onChange}
+                        />
+                        {fieldState.error && (
+                          <p className="text-sm text-destructive">
+                            {fieldState.error.message}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  }}
+                />
+                <div className="flex justify-end gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsOpen(false)}
+                    disabled={loading}
+                    className="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                )}
-                {isEdit
-                  ? submitting
-                    ? "Updating..."
-                    : "Update Template"
-                  : submitting
-                    ? "Saving..."
-                    : "Save Template"}
-              </button>
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="px-5 py-2.5 bg-linear-to-r from-green-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-medium transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {loading && (
+                      <svg
+                        className="animate-spin h-4 w-4 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                    )}
+                    {isEdit
+                      ? loading
+                        ? "Updating..."
+                        : "Update Template"
+                      : loading
+                        ? "Saving..."
+                        : "Save Template"}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
-        </>
-        //     </motion.div>
-        //</motion.div>
+        </FixedPop>
       )}
-      {/* </AnimatePresence> */}
-
       {/* Delete Confirmation Modal */}
-      {/* <AnimatePresence> */}
       {deleteConfirm !== null && (
-        // <motion.div
-        //   initial={{ opacity: 0 }}
-        //   animate={{ opacity: 1 }}
-        //   exit={{ opacity: 0 }}
-        //   className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 p-4"
-        //   onClick={() => !submitting && setDeleteConfirm(null)}
-        // >
-        //   <motion.div
-        //     initial={{ scale: 0.95, opacity: 0 }}
-        //     animate={{ scale: 1, opacity: 1 }}
-        //     exit={{ scale: 0.95, opacity: 0 }}
-        //     onClick={(e) => e.stopPropagation()}
-        //     className="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden"
-        //   >
-        <>
-          <div className="bg--to-r from-red-500 to-red-600 px-6 py-4">
-            <h2 className="text-xl font-semibold text-white">
-              Delete Template
-            </h2>
-          </div>
-          <div className="p-6">
-            <p className="text-gray-700 mb-6">
-              Are you sure you want to delete this template? This action cannot
-              be undone.
-            </p>
-            <div className="flex justify-end gap-3">
-              <button
-                onClick={() => setDeleteConfirm(null)}
-                disabled={submitting}
-                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={submitting}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
-              >
-                {submitting && (
-                  <svg
-                    className="animate-spin h-4 w-4 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                )}
-                {submitting ? "Deleting..." : "Delete"}
-              </button>
+        <FixedPop>
+          <div className="max-w-2xl mx-auto bg-white/55 rounded-lg">
+            <div className="bg--to-r from-red-500 to-red-600 px-6 py-4">
+              <h2 className="text-xl font-semibold text-amber-600">
+                Delete Template ?
+              </h2>
+            </div>
+            <div className="p-6">
+              <p className="text-gray-700 mb-6">
+                Are you sure you want to delete this template? This action
+                cannot be undone.
+              </p>
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setDeleteConfirm(null)}
+                  disabled={loading}
+                  className="px-4 py-2 border bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-medium transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDelete}
+                  disabled={loading}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
+                >
+                  {loading && (
+                    <svg
+                      className="animate-spin h-4 w-4 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                  )}
+                  {loading ? "Deleting..." : "Delete"}
+                </button>
+              </div>
             </div>
           </div>
-        </>
-        //  {/* </motion.div>
-        // </motion.div> */}
+        </FixedPop>
       )}
-      {/* </AnimatePresence> */}
     </div>
   );
 }

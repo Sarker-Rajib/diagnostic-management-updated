@@ -12,7 +12,7 @@ import { FPrint } from "@/utility/printComponent";
 import Invoice from "@/components/Invoice/Invoice";
 import { UpdatePatientComponent } from "@/components/PatientComponents/UpdatePatient";
 
-export default function PrescriptioPage() {
+export default function PatientPage() {
   const [reload, setReload] = useState<boolean>(false);
   const pathname = usePathname();
   const id = pathname.split("/").pop();
