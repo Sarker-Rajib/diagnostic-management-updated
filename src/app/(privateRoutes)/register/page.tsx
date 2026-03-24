@@ -41,7 +41,7 @@ export default function PatientRegisterPage() {
   }, [reload]);
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setPatient({ ...patient, [name]: value });
@@ -120,14 +120,14 @@ export default function PatientRegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-teal-50 to-blue-50 p-6">
+    <div className="min-h-screen bg-linear-to-br from-teal-50 to-blue-50 p-3">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-center gap-4 mb-8">
-          <div className="p-3 bg-teal-100 rounded-full">
-            <Users size={32} className="text-teal-600" />
+        <div className="flex items-center justify-center gap-4 mb-4">
+          <div className="p-2 bg-teal-100 rounded-full">
+            <Users size={26} className="text-teal-600" />
           </div>
-          <h1 className="text-3xl font-bold text-teal-800">
+          <h1 className="text-2xl font-bold text-teal-800">
             Patient Registration
           </h1>
         </div>
@@ -145,7 +145,7 @@ export default function PatientRegisterPage() {
 
             <Link
               href="/"
-              className="absolute end-3 top-1/2 -translate-y-1/2 flex items-center border pe-3 rounded border-amber-300"
+              className="absolute end-3 text-white top-1/2 -translate-y-1/2 flex items-center border p-1 pe-4 rounded border-amber-300"
             >
               <ChevronLeft size={26} /> Back
             </Link>
@@ -153,7 +153,7 @@ export default function PatientRegisterPage() {
 
           {/* Form Body */}
           <form onSubmit={handleSubmit} className="p-6 text-black">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-6">
               {/* Full Name */}
               <div className="col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -166,7 +166,7 @@ export default function PatientRegisterPage() {
                     value={patient.fullName}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     placeholder="Enter patient's full name"
                   />
                 </div>
@@ -182,7 +182,7 @@ export default function PatientRegisterPage() {
                   value={patient.gender}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                 >
                   <option value="" disabled hidden>
                     Select Gender
@@ -205,7 +205,7 @@ export default function PatientRegisterPage() {
                   onChange={handleChange}
                   required
                   min="0"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                   placeholder="Enter age"
                 />
               </div>
@@ -223,7 +223,7 @@ export default function PatientRegisterPage() {
                     onChange={handleChange}
                     required
                     pattern="\d{11}"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                     placeholder="11-digit phone number"
                   />
                   <span className="absolute right-3 top-3 text-xs text-gray-500">
@@ -242,7 +242,7 @@ export default function PatientRegisterPage() {
                   name="email"
                   value={patient.email}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                   placeholder="patient@example.com"
                 />
               </div>
@@ -257,7 +257,7 @@ export default function PatientRegisterPage() {
                   value={patient.address}
                   onChange={handleChange}
                   rows={3}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition"
                   placeholder="Enter full address"
                 />
               </div>
@@ -268,7 +268,7 @@ export default function PatientRegisterPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className={`w-full py-3 px-6 rounded-lg font-medium text-white transition-all ${
+                className={`w-full py-3 px-6 rounded-lg font-medium text-white transition-all cursor-pointer ${
                   submitting
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-teal-600 hover:bg-teal-700 shadow-md hover:shadow-lg"

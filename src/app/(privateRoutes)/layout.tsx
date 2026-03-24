@@ -1,7 +1,9 @@
 "use client";
 import { logOutUser } from "@/services/AuthServices";
 import {
+  ArrowLeft,
   BookPlus,
+  ChevronLeft,
   CircleDollarSign,
   FlaskConical,
   Home,
@@ -12,6 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export default function RootLayout({
@@ -21,6 +24,7 @@ export default function RootLayout({
 }>) {
   const router = useRouter();
   const pathname = usePathname();
+  const [back, setBack] = useState("");
 
   const handleUseLogOut = () => {
     logOutUser();
@@ -44,15 +48,32 @@ export default function RootLayout({
     { name: "Admin Dashboard", path: "/admin-dashboard", icon: MonitorCheck },
   ];
 
+  const handleGoingBack = () => {
+    if (pathname === "/") {
+      return;
+    }
+
+    pathname.split("/").slice(0, -1).length === 1
+      ? router.push("/")
+      : router.push(pathname.split("/").slice(0, -1).join("/"));
+  };
+
   return (
     <div className="min-h-screen bg-linear-to-br from-teal-50 to-blue-50">
       {/* Sidebar */}
       <div className="w-16 bg-linear-to-b from-teal-700 to-teal-800 h-screen flex flex-col items-center py-8 gap-6 fixed top-0 left-0 shadow-xl z-10">
         {/* Logo/App Name */}
         <div className="mb-8">
-          <div className="bg-white/20 p-3 rounded-xl" title="brand Logo">
+          <button
+            onClick={handleGoingBack}
+            className="bg-white/20 p-3 rounded-xl inline-block cursor-pointer"
+            title="brand Logo"
+          >
+            <ArrowLeft className="text-amber-400" size={24} />
+          </button>
+          {/* <div className="bg-white/20 p-3 rounded-xl" title="brand Logo">
             <FlaskConical className="text-white" size={24} />
-          </div>
+          </div> */}
         </div>
 
         {/* Navigation Items */}

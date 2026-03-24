@@ -11,8 +11,10 @@ import { Calendar, CreditCard, Pen, Phone, User } from "lucide-react";
 import { FPrint } from "@/utility/printComponent";
 import Invoice from "@/components/Invoice/Invoice";
 import { UpdatePatientComponent } from "@/components/PatientComponents/UpdatePatient";
+import FixedPop from "@/components/fixedPop";
 
 export default function PatientPage() {
+  const [loding, setLoading] = useState<boolean>(false);
   const [reload, setReload] = useState<boolean>(false);
   const pathname = usePathname();
   const id = pathname.split("/").pop();
@@ -27,9 +29,8 @@ export default function PatientPage() {
     const fetchPatient = async () => {
       try {
         const response = await fetch(`${envConfig.baseApi}/patient/${id}`);
-        const data = await response.json();
-        const patientData = data.data[0];
-        setPatient(patientData);
+        const patientServerData = await response.json();
+        setPatient(patientServerData.data);
 
         const token = await accessToken();
 
@@ -48,7 +49,7 @@ export default function PatientPage() {
 
         // bills
         const billResponse = await fetch(
-          `${envConfig.baseApi}/bill/all/${patientData._id}`,
+          `${envConfig.baseApi}/bill/${patientServerData?.data?._id}`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -58,9 +59,14 @@ export default function PatientPage() {
         );
 
         const billsData = await billResponse.json();
+
         if (billsData.success) {
-          toast.success("data found successfully");
-          setBills(billsData.data);
+          toast.success("Bill Data fetched! successfully");
+          if (billsData.data === null) {
+            setBills([]);
+          } else {
+            setBills(billsData.data);
+          }
         } else {
           toast.error(`${billsData.message} for Bills`);
           setBills([]);
@@ -71,7 +77,9 @@ export default function PatientPage() {
       }
     };
 
+    setLoading(true);
     fetchPatient();
+    setLoading(false);
   }, [id, reload]);
 
   const [shouldPrint, setShouldPrint] = useState<boolean>(false);
@@ -98,16 +106,16 @@ export default function PatientPage() {
   return (
     <div className="p-4">
       {/* Pt display data */}
-      <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+      <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden border border-sky-200">
         {/* Header */}
-        <div className="bg-linear-to-r from-teal-600 to-teal-800 px-6 py-4">
-          <h1 className="text-2xl md:text-3xl font-bold text-white text-center">
+        <div className="bg-linear-to-r from-teal-600 to-teal-800 px-6 py-3">
+          <h1 className="text-2xl font-bold text-white text-center">
             Patient History
           </h1>
         </div>
 
         {/* Patient Information Card */}
-        <div className="p-6">
+        <div className="p-2">
           {patient ? (
             <div className="bg-white rounded-xl border border-gray-100 shadow-md overflow-hidden mb-6">
               {/* Patient Details */}
@@ -240,8 +248,9 @@ export default function PatientPage() {
             </div>
           )}
 
-          {/* Prescriptions Section */}
-          {/* <div className="bg-white rounded-xl border border-gray-100 shadow-md overflow-hidden mb-6">
+          <div>
+            {/* Prescriptions Section */}
+            {/* <div className="bg-white rounded-xl border border-gray-100 shadow-md overflow-hidden mb-6">
             <div className="bg-gray-50 px-6 py-4 border-b">
               <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                 <ClipboardList size={20} className="text-teal-600" />
@@ -302,6 +311,7 @@ export default function PatientPage() {
               </div>
             )}
           </div> */}
+          </div>
 
           {/* Bills Section */}
           <div className="bg-white rounded-xl border border-gray-100 shadow-md overflow-hidden">
@@ -312,11 +322,11 @@ export default function PatientPage() {
               </h2>
             </div>
 
-            {bills == null ? (
+            {bills === null ? (
               <div className="py-12 flex justify-center">
                 <PropagateLoader color="#0d9488" />
               </div>
-            ) : (
+            ) : bills?.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
@@ -369,6 +379,10 @@ export default function PatientPage() {
                   </tbody>
                 </table>
               </div>
+            ) : (
+              <p className="text-center py-2 text-xl text-purple-500">
+                No Data found
+              </p>
             )}
           </div>
         </div>
@@ -376,12 +390,14 @@ export default function PatientPage() {
 
       {/* upadate patient modal */}
       {toUpdatePatient && (
-        <UpdatePatientComponent
-          setToUpdatePatient={setToUpdatePatient}
-          setReload={setReload}
-          reload={reload}
-          toUpdatePatient={toUpdatePatient}
-        />
+        <FixedPop>
+          <UpdatePatientComponent
+            setToUpdatePatient={setToUpdatePatient}
+            setReload={setReload}
+            reload={reload}
+            toUpdatePatient={toUpdatePatient}
+          />
+        </FixedPop>
       )}
 
       <div className="hidden">

@@ -22,31 +22,38 @@ export const constants = {
   CPaymentStatus: ["Paid", "Partial", "Unpaid"],
   CPaymentMethod: ["Cash", "Card", "Online"],
 
-  division: ["Laboratory Services", "Radiology & Imaging", "Ultrasonogram"],
+  division: ["Laboratory Services", "Radiology & Imaging", "Ultrasonography"],
 
   department: [
-    "Biochemistry",
     "Haematology",
+    "Biochemistry",
     "Clinical Pathology",
     "Histopathology & Cytopathology",
     "Microbiology",
     "Immunology",
-    "Ultrasonogram",
+    "Transfusion Medicine",
+    "Ultrasonography",
+    "Ragiology & Imaging",
   ],
 
   reportGroup: [
     "CBC",
+    "Coagulation",
+    "Urine R/M/E",
     "Chemistry",
     "Immunology",
     "Serology",
-    "Coagulation",
     "Widal",
     "Blood_Culture",
     "Urine_Culture",
     "Pus_Culture",
     "Stool_Culture",
     "CSF",
-    "Ultrasonogram W/A",
+    "Histopathology",
+    "Cytopathology",
+    "Ultrasonography",
+    "Ragiology & Imaging",
+    "N / A",
   ],
 
   testSample: [
@@ -57,6 +64,9 @@ export const constants = {
     "Plueral Fluid",
     "Ascitic Fluid",
     "Synovial Fluid",
+    "Body Tissue",
+    "FNAC",
+    "Skin Scraping",
     "N / A",
   ],
 };

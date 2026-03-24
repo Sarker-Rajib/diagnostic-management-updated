@@ -15,6 +15,7 @@ import { PropagateLoader } from "react-spinners";
 import { IMeta, IPatient } from "@/types";
 import { UpdatePatientComponent } from "@/components/PatientComponents/UpdatePatient";
 import { CreatePatientComponent } from "@/components/PatientComponents/CreatePatient";
+import FixedPop from "@/components/fixedPop";
 
 export default function PatientsPage() {
   const [reload, setReload] = useState<boolean>(false);
@@ -62,27 +63,27 @@ export default function PatientsPage() {
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-2 gap-4">
-          <div className="flex items-center gap-3 bg-teal-700 px-6 py-3 rounded-lg shadow-md">
-            <Users size={26} className="text-white" />
-            <h1 className="text-xl font-bold text-white">
-              Patients Management
-            </h1>
-          </div>
-
           <button
             onClick={() => setIsOpen(true)}
-            className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white py-2 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1"
+            className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white py-2 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1 cursor-pointer"
           >
             <span className="text-lg font-semibold">Register Patient</span>
             <Pencil size={20} className="text-white" />
           </button>
+
+          <div className="flex items-center gap-3 bg-teal-700 px-6 py-1.5 rounded-lg shadow-md">
+            <Users size={22} className="text-white" />
+            <h1 className="text-lg font-bold text-white">
+              Patients Management
+            </h1>
+          </div>
         </div>
 
         {/* Patients List Card */}
         <div className="bg-white rounded-xl">
           {/* List Header */}
           <div className="sticky top-1">
-            <div className="bg-teal-600 rounded-t-xl px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 ">
+            <div className="bg-teal-600 rounded-t-xl px-6 py-2 flex flex-col sm:flex-row justify-between items-center gap-4 ">
               <h2 className="text-xl font-semibold text-white">
                 Patients List{" "}
                 {meta && (
@@ -166,25 +167,25 @@ export default function PatientsPage() {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Patient ID
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Full Name
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Gender
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Age
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Phone
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Email
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
@@ -195,7 +196,7 @@ export default function PatientsPage() {
                         key={patient.pId}
                         className="hover:bg-gray-50 transition"
                       >
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 py-2 whitespace-nowrap">
                           <Link
                             href={`/dashboard/patients/${patient._id}`}
                             className="text-teal-600 hover:text-teal-800 font-medium"
@@ -203,7 +204,7 @@ export default function PatientsPage() {
                             {patient?.pId}
                           </Link>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 py-2 whitespace-nowrap">
                           <Link
                             href={`/dashboard/patients/${patient._id}`}
                             className="text-teal-600 hover:text-teal-800"
@@ -211,7 +212,7 @@ export default function PatientsPage() {
                             {patient?.fullName}
                           </Link>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 py-2 whitespace-nowrap">
                           <span
                             className={`px-2 py-1 text-xs rounded-full ${
                               patient?.gender === "Male"
@@ -224,10 +225,10 @@ export default function PatientsPage() {
                             {patient?.gender}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 py-2 whitespace-nowrap">
                           {patient?.age}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 py-2 whitespace-nowrap">
                           <a
                             href={`tel:${patient?.phoneNumber}`}
                             className="hover:text-teal-600"
@@ -235,7 +236,7 @@ export default function PatientsPage() {
                             {patient?.phoneNumber}
                           </a>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 py-2 whitespace-nowrap">
                           {patient?.email && (
                             <a
                               href={`mailto:${patient?.email}`}
@@ -245,7 +246,7 @@ export default function PatientsPage() {
                             </a>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-4 py-2 whitespace-nowrap">
                           <div className="flex gap-2">
                             <button
                               onClick={() => setToUpdatePatient(patient)}
@@ -290,21 +291,25 @@ export default function PatientsPage() {
 
         {/* Add Patient Modal */}
         {isOpen && (
-          <CreatePatientComponent
-            setIsOpen={setIsOpen}
-            setReload={setReload}
-            reload={reload}
-          />
+          <FixedPop>
+            <CreatePatientComponent
+              setIsOpen={setIsOpen}
+              setReload={setReload}
+              reload={reload}
+            />
+          </FixedPop>
         )}
 
         {/* Update Patient Modal */}
         {toUpdatePatient && (
-          <UpdatePatientComponent
-            setToUpdatePatient={setToUpdatePatient}
-            setReload={setReload}
-            reload={reload}
-            toUpdatePatient={toUpdatePatient}
-          />
+          <FixedPop>
+            <UpdatePatientComponent
+              setToUpdatePatient={setToUpdatePatient}
+              setReload={setReload}
+              reload={reload}
+              toUpdatePatient={toUpdatePatient}
+            />
+          </FixedPop>
         )}
       </div>
     </div>
