@@ -200,7 +200,7 @@ export default function RefRangePage() {
                   onClick={() => setIsOpen(true)}
                   className="mt-4 bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 rounded-lg transition"
                 >
-                  Register New Patient
+                  Register New Test Pannel
                 </button>
               </div>
             ) : (
@@ -237,7 +237,7 @@ export default function RefRangePage() {
                           </Link>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          {ref?.refPanelName}
+                          {ref?.refName}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           {ref?.priority}

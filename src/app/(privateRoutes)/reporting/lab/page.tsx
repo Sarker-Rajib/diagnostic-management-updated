@@ -1,40 +1,43 @@
 // components/BloodReportSystem.tsx
 "use client";
 
+import PendingBills from "@/components/BillingItems/PendingBills";
+import LabTable from "@/components/LabReport/LabTable";
 import FloatingLoader from "@/components/Loader/FloatingLoader";
 import { envConfig } from "@/config/envConfig";
+import { ITestPanelFull, ITestRefData } from "@/types";
 import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
-export type DepartmentType = "Haematology" | "Biochemistry" | "Serology";
-export type ReportStatus = "pending" | "completed" | "verified";
-
-interface IPatientInfo {
-  _id: string;
-  fullName: string;
-  gender: "Male" | "Female" | "Other"; // you can adjust if needed
-  age: number;
-  phoneNumber: string;
-  pId: string;
-}
 
 interface IReportData {
-  patientInfo: IPatientInfo;
+  patientInfo: {
+    _id: string;
+    fullName: string;
+    gender: string;
+    age: number;
+    phoneNumber: string;
+    pId: string;
+  };
   reportGroups: string[];
 }
 
+// Union Type (can be either single test or panel)
+export type ILabService = ITestRefData | ITestPanelFull;
+
 const BloodReportSystem: React.FC = () => {
-  const [billNumber, setBillNumber] = useState("");
+  const [loading, setLoading] = useState(false);
   const [billInformation, setBillInformation] = useState<IReportData | null>(
     null,
   );
-  const [loading, setLoading] = useState(false);
-  const [departmentFilter, setDepartmentFilter] =
-    useState<string>("Haematology");
-  const dept = ["Haematology", "Biochemistry", "Serology"];
-
+  const [testInformation, setTestInformation] = useState<ILabService[] | null>(
+    null,
+  );
+  // data fetching filter
+  const [billNumber, setBillNumber] = useState("");
+  const [reportGroupFiler, setReportGroupFilter] = useState<string>();
+  // -------------------------
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState("");
-  console.log(billInformation);
 
   // Fetch bill data when bill number changes
   useEffect(() => {
@@ -42,8 +45,15 @@ const BloodReportSystem: React.FC = () => {
       fetchBillData(billNumber);
     } else {
       setBillInformation(null);
+      setTestInformation(null);
     }
-  }, [billNumber, departmentFilter]);
+  }, [billNumber, reportGroupFiler]);
+
+  useEffect(() => {
+    if (reportGroupFiler) {
+      fetchReportingData(billNumber, reportGroupFiler);
+    }
+  }, [reportGroupFiler, billNumber]);
 
   const fetchBillData = async (billNo: string) => {
     setLoading(true);
@@ -52,7 +62,7 @@ const BloodReportSystem: React.FC = () => {
 
     try {
       const response = await fetch(
-        `${envConfig.baseApi}/lab-report/report-groups/B${billNumber}`,
+        `${envConfig.baseApi}/lab-report/report-groups/B${billNo}`,
         {
           method: "GET",
           headers: {
@@ -66,6 +76,7 @@ const BloodReportSystem: React.FC = () => {
       }
 
       const result = await response.json();
+      setReportGroupFilter(result.data.reportGroups[0]);
       setBillInformation(result.data);
 
       toast.success(result?.message);
@@ -76,35 +87,37 @@ const BloodReportSystem: React.FC = () => {
     }
   };
 
-  // Update test value
-  // const updateTestValue = (testId: string, value: string) => {
-  //   setTestResults(prev => prev.map(test => {
-  //     if (test.id === testId) {
-  //       const numValue = parseFloat(value)
-  //       let flag: 'low' | 'normal' | 'high' = 'normal'
+  const fetchReportingData = async (billNo: string, reportGroup: string) => {
+    setLoading(true);
+    setLoadingMessage("Fetching patient records...");
+    setLoadingProgress(0);
 
-  //       if (!isNaN(numValue) && currentBill?.patient.gender) {
-  //         const range = test.referenceRange[currentBill.patient.gender]
-  //         if (numValue < range[0]) flag = 'low'
-  //         else if (numValue > range[1]) flag = 'high'
-  //       }
+    try {
+      const response = await fetch(
+        `${envConfig.baseApi}/lab-report/group-tests/B${billNo}?reportGroup=${reportGroup}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
 
-  //       return { ...test, value, flag }
-  //     }
-  //     return test
-  //   }))
-  // }
+      if (!response.ok) {
+        toast.error("Something went wrong");
+      }
 
-  // // Group tests by department
-  // const testsByDepartment = testResults.reduce((acc, test) => {
-  //   if (!acc[test.department]) {
-  //     acc[test.department] = []
-  //   }
-  //   acc[test.department].push(test)
-  //   return acc
-  // }, {} as Record<DepartmentType, TestResult[]>)
+      const result = await response.json();
 
-  const penfdingBills = ["26000001"];
+      setTestInformation(result.data);
+
+      toast.success(result?.message);
+    } catch (error) {
+      console.error("Error fetching templates:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="max-w-400 mx-auto p-2">
@@ -130,11 +143,11 @@ const BloodReportSystem: React.FC = () => {
                 Select Service/Test Department
               </label>
               <select
-                onChange={(e) => setDepartmentFilter(e.currentTarget.value)}
+                onChange={(e) => setReportGroupFilter(e.currentTarget.value)}
                 className="w-full p-1.5 px-2 border border-gray-300 rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {billInformation &&
-                  billInformation.reportGroups.map((group, i) => (
+                  billInformation?.reportGroups?.map((group, i) => (
                     <option key={i}>{group}</option>
                   ))}
               </select>
@@ -182,83 +195,18 @@ const BloodReportSystem: React.FC = () => {
       <div className="bg-white grid grid-cols-6 gap-4 p-2">
         {/* pending service id */}
         <div className="rounded-lg shadow-lg border border-purple-400 p-3">
-          <h3 className="font-semibold text-gray-800 mb-3  border-b">
-            Pending Services
-          </h3>
-
-          {penfdingBills.map((billNo) => (
-            <p
-              onClick={() => setBillNumber(billNo)}
-              key={billNo}
-              className="mb-2 text-gray-600 cursor-pointer hover:bg-gray-100 rounded bg-amber-100 text-center"
-            >
-              {billNo}
-            </p>
-          ))}
+          <PendingBills
+            setBillNumber={setBillNumber}
+            division="Laboratory Services"
+          />
         </div>
 
-        {/* data input section */}
-        {/* <div className="col-span-5 border border-purple-400 rounded-lg p-3 shadow-lg"> 
-          {billInformation ? (
+        <div className="col-span-5 border border-purple-400 rounded-lg p-3 shadow-lg">
+          {testInformation ? (
             <div>
-              {filteredBills && filteredBills.length > 0 ? (
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="bg-gray-50">
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Test
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Unit
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Value
-                        </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Reference
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                      {filteredBills.map((test: any) => (
-                        <tr
-                          key={test.id}
-                          className="hover:bg-gray-50/80 transition-colors"
-                        >
-                          <td className="px-3 py-1">
-                            <div>
-                              <div className="font-medium text-gray-800">
-                                {test.name}
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-3 py-1 text-sm text-gray-600">
-                            {test.unit}
-                          </td>
-                          <td className="px-3 py-1">
-                            <input
-                              type="number"
-                              name={test.nameShort}
-                              placeholder="0.00"
-                              className="w-28 px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                            />
-                          </td>
-                          <td className="px-3 py-1">
-                            <span className="text-sm text-gray-600">
-                              {test.referenceRange.male}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-
-                  <div className="px-6 py-4 bg-gray-50/50 border-t border-gray-100">
-                    <button className="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600 transition-colors">
-                      Save Results
-                    </button>
-                  </div>
+              {testInformation.length > 0 ? (
+                <div className="col-span-5">
+                  <LabTable data={testInformation} />
                 </div>
               ) : (
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center">
@@ -279,7 +227,7 @@ const BloodReportSystem: React.FC = () => {
               </div>
             )
           )}
-        </div> */}
+        </div>
       </div>
     </div>
   );

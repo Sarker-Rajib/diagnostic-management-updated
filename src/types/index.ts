@@ -61,15 +61,6 @@ export interface IPrescription {
   prescriptionId: string;
 }
 
-export interface ITestRefData {
-  _id?: string;
-  refName: string;
-  testName: string;
-  unit: string;
-  priority: number;
-  referenceRange: string;
-}
-
 export interface IPatientInfo {
   _id?: string;
   fullName: string;
@@ -209,16 +200,25 @@ export interface IServiceData {
 
 export interface ITestPanel {
   _id?: string;
-  refPanelName: string;
+  refName: string;
   panelName: string;
   tests: [string];
   priority: number;
   isPanel: boolean;
 }
 
+export interface ITestRefData {
+  _id?: string;
+  refName: string;
+  testName: string;
+  unit: string;
+  priority: number;
+  referenceRange: string;
+}
+
 export interface ITestPanelFull {
   _id?: string;
-  refPanelName: string;
+  refName: string;
   panelName: string;
   tests: [ITestRefData];
   priority: number;

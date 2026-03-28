@@ -1,4 +1,5 @@
 "use client";
+import PendingBills from "@/components/BillingItems/PendingBills";
 import TiptapEditor from "@/components/TextEditor";
 import { envConfig } from "@/config/envConfig";
 import { IUSGTemplate } from "@/types/usgReport";
@@ -206,80 +207,89 @@ export default function UltrasonographyReportPage() {
       </div>
 
       {/* ----- */}
-      <div className="report">
-        <div className="flex items-center gap-2 bg-white p-1 rounded-lg">
-          <label className="whitespace-nowrap p-1 ps-2">
-            Choose a Template :
-          </label>
-          {loading ? (
-            <svg
-              className="animate-spin h-4 w-4 text-sky-500"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-          ) : (
-            <select
-              className="p-1 px-2 border border-gray-300 rounded-md text-lg"
-              onChange={(e) => {
-                const selected = data?.find(
-                  (item) => item.title === e.currentTarget.value,
-                );
-                setCurrentData(selected?.template || "");
-              }}
-            >
-              <option value="">Select Template</option>
-              {data?.map((item, i) => (
-                <option key={i} value={item.title}>
-                  {item.title}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
-
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Controller
-            name="Details"
-            control={control}
-            render={({ field, fieldState }) => {
-              return (
-                <div>
-                  <TiptapEditor
-                    content={field.value}
-                    onChange={field.onChange}
-                  />
-                  {fieldState.error && (
-                    <p className="text-sm text-destructive">
-                      {fieldState.error.message}
-                    </p>
-                  )}
-                </div>
-              );
-            }}
+      <div className="grid grid-cols-7 gap-3 bg-white">
+        <div className="rounded-lg shadow-lg border border-purple-400 p-3">
+          <PendingBills
+            setBillNumber={setBillNumber}
+            division="Ultrasonography"
           />
-          <div className="text-end pt-2">
-            <button
-              type="submit"
-              className="inline-block p-2 px-8 bg-green-600 text-white rounded-md"
-            >
-              Submit
-            </button>
+        </div>
+        {/* ---------------- */}
+        <div className="report col-span-6">
+          <div className="flex items-center gap-2 bg-white p-1 rounded-lg">
+            <label className="whitespace-nowrap p-1 ps-2">
+              Choose a Template :
+            </label>
+            {loading ? (
+              <svg
+                className="animate-spin h-4 w-4 text-sky-500"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            ) : (
+              <select
+                className="p-1 px-2 border border-gray-300 rounded-md text-lg"
+                onChange={(e) => {
+                  const selected = data?.find(
+                    (item) => item.title === e.currentTarget.value,
+                  );
+                  setCurrentData(selected?.template || "");
+                }}
+              >
+                <option value="">Select Template</option>
+                {data?.map((item, i) => (
+                  <option key={i} value={item.title}>
+                    {item.title}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
-        </form>
+
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Controller
+              name="Details"
+              control={control}
+              render={({ field, fieldState }) => {
+                return (
+                  <div>
+                    <TiptapEditor
+                      content={field.value}
+                      onChange={field.onChange}
+                    />
+                    {fieldState.error && (
+                      <p className="text-sm text-destructive">
+                        {fieldState.error.message}
+                      </p>
+                    )}
+                  </div>
+                );
+              }}
+            />
+            <div className="text-end pt-2">
+              <button
+                type="submit"
+                className="inline-block p-2 px-8 bg-green-600 text-white rounded-md"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

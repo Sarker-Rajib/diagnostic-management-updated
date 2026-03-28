@@ -21,7 +21,7 @@ export const RefPanelCraeteForm = ({
   const [selectedRefs, setSelectedRefs] = useState<ITestRefData[]>([]);
 
   const [formData, setFormData] = useState<Partial<ITestPanel>>({
-    refPanelName: "",
+    refName: "",
     panelName: "",
     priority: 1,
     isPanel: true,
@@ -63,7 +63,7 @@ export const RefPanelCraeteForm = ({
           if (data?.success) {
             toast.success(`${data?.message}`);
             setFormData({
-              refPanelName: "",
+              refName: "",
               panelName: "",
               priority: 1,
               isPanel: true,
@@ -183,7 +183,7 @@ export const RefPanelCraeteForm = ({
             {/* Test Name */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
-                Ref Name
+                Reference Name
                 <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -204,9 +204,9 @@ export const RefPanelCraeteForm = ({
                 </div>
                 <input
                   type="text"
-                  name="refPanelName"
+                  name="refName"
                   placeholder="e.g: l.profile"
-                  value={formData.refPanelName}
+                  value={formData.refName}
                   onChange={handleChange}
                   className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out"
                   required

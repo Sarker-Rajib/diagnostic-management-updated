@@ -113,45 +113,6 @@ export default function TestRefUpdatePage({}) {
 
         {/* Form */}
         <form onSubmit={handleUpdate} className="p-6 space-y-5">
-          {/* Reference Name */}
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
-              Reference Name
-              <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg
-                  className="h-5 w-5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l5 5a2 2 0 01.586 1.414V19a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z"
-                  />
-                </svg>
-              </div>
-              <input
-                type="text"
-                name="refName"
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    refName: e.target.value,
-                  })
-                }
-                placeholder="e.g., Complete Blood Count"
-                defaultValue={testRef?.refName}
-                className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out"
-                required
-              />
-            </div>
-          </div>
-
           {/* Test Name */}
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
@@ -185,6 +146,45 @@ export default function TestRefUpdatePage({}) {
                     testName: e.target.value,
                   })
                 }
+                className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Reference Name */}
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
+              Reference Name
+              <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg
+                  className="h-5 w-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l5 5a2 2 0 01.586 1.414V19a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z"
+                  />
+                </svg>
+              </div>
+              <input
+                type="text"
+                name="refName"
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    refName: e.target.value,
+                  })
+                }
+                placeholder="e.g., Complete Blood Count"
+                defaultValue={testRef?.refName}
                 className="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out"
                 required
               />

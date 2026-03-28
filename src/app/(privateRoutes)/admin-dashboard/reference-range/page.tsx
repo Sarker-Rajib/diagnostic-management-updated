@@ -148,7 +148,7 @@ export default function RefRangePage() {
           </div>
         </div>
 
-        <div className="p-4">
+        <div className="p-1">
           {/* Patients Table */}
           {allTestRefs?.length === 0 ? (
             <div className="text-center py-8">
@@ -166,8 +166,11 @@ export default function RefRangePage() {
           ) : (
             <div className="overflow-x-auto rounded-lg border border-gray-200">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+                <thead className="bg-gray-100">
                   <tr>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      #
+                    </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Test Name
                     </th>
@@ -180,7 +183,7 @@ export default function RefRangePage() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Normal Range
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -188,7 +191,10 @@ export default function RefRangePage() {
                 <tbody className="bg-white divide-y divide-gray-200 text-slate-500">
                   {allTestRefs?.map((ref, i) => (
                     <tr key={i} className="hover:bg-gray-50 transition">
-                      <td className="px-2 py-1 whitespace-nowrap">
+                      <td className="px-2 py-1 text-center whitespace-nowrap">
+                        {i + 1}
+                      </td>
+                      <td className="ps-2 p-1 whitespace-nowrap">
                         <Link
                           href={`/admin-dashboard/reference-range/${ref._id}`}
                           className="text-teal-600 hover:text-teal-800"
@@ -206,7 +212,7 @@ export default function RefRangePage() {
                         {ref?.referenceRange}
                       </td>
                       <td className="px-2 py-1 whitespace-nowrap">
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 justify-center">
                           <Link
                             href={`/admin-dashboard/reference-range/${ref._id}`}
                             title="Update data"
