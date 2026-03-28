@@ -1,13 +1,12 @@
 "use client";
+import FixedPop from "@/components/fixedPop";
 import { RefPanelCraeteForm } from "@/components/Forms/ReferencePanelAddForm";
-import { TestRefCraeteForm } from "@/components/Forms/ReferenceRangeAddForm";
 import { envConfig } from "@/config/envConfig";
-import { IMeta, ITestPanel, ITestPanelFull, ITestRefData } from "@/types";
+import { IMeta, ITestPanelFull } from "@/types";
 import {
   ChevronLeft,
   ChevronRight,
   Eraser,
-  Eye,
   Pencil,
   Scale,
   Search,
@@ -16,6 +15,7 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PropagateLoader } from "react-spinners";
+import { toast } from "sonner";
 
 export default function RefRangePage() {
   const [reload, setReload] = useState<boolean>(false);
@@ -24,8 +24,9 @@ export default function RefRangePage() {
   const [allTestPanels, setAllTestPanels] = useState<ITestPanelFull[] | null>(
     null,
   );
-
   const [meta, setMeta] = useState<IMeta | null>(null);
+  // ////
+  const [deletePannelId, setDeletePanelId] = useState<string | null>(null);
 
   //  /// // //
   const [searchText, setSearchText] = useState("");
@@ -45,12 +46,13 @@ export default function RefRangePage() {
         url += `?page=${page}&limit=${limit}`;
       }
 
-      fetch(url)
+      fetch(url, {
+        cache: "no-store",
+      })
         .then((res) => res.json())
         .then((data) => {
           setAllTestPanels(data?.data?.panelData);
           setMeta(data?.data?.meta);
-          console.log(data);
         })
         .catch((error) => {
           console.log(error);
@@ -58,7 +60,44 @@ export default function RefRangePage() {
     }, 300);
 
     return () => clearTimeout(delayDebounce);
-  }, [searchText, reload, page, limit]);
+  }, [searchText, reload, page, limit, deletePannelId]);
+
+  // delete options state
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(
+        `${envConfig.baseApi}/panel-reference/delete/${deletePannelId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            // Add any auth headers if needed
+            // 'Authorization': `Bearer ${yourToken}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.message || `Failed to delete: ${response.status}`,
+        );
+      }
+
+      const data = await response.json();
+
+      toast.success(data?.message);
+    } catch (error) {
+      console.error("Error deleting panel reference:", error);
+      return {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      };
+    } finally {
+      setDeletePanelId(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-linear-to-br from-teal-50 to-blue-50 p-2">
@@ -221,6 +260,7 @@ export default function RefRangePage() {
                             </button>
                             <button
                               title="Delete"
+                              onClick={() => setDeletePanelId(ref?._id!)}
                               className="p-2 bg-blue-100 hover:bg-blue-200 rounded-lg text-blue-600 transition"
                             >
                               <Eraser size={18} />
@@ -254,6 +294,35 @@ export default function RefRangePage() {
             setReload={setReload}
             reload={reload}
           />
+        )}
+
+        {/* confirm delete modal */}
+        {deletePannelId && (
+          <FixedPop>
+            <div className="text-center bg-white rounded-lg p-6 max-w-md w-full mx-auto shadow-xl">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Do You want to delete the pannel?
+              </h3>
+
+              <hr />
+              <br />
+
+              <div className="flex justify-center gap-3">
+                <button
+                  onClick={() => setDeletePanelId(null)}
+                  className="px-4 py-2 text-sky-600 hover:text-gray-900 bg-amber-300 rounded disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          </FixedPop>
         )}
       </div>
     </div>

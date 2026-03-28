@@ -153,7 +153,7 @@ export default function ServiceManagaPage() {
                     Service Name
                   </th>
                   <th className="py-1 px-4 text-left font-semibold text-gray-700 text-sm border-b">
-                    Test Name
+                    Ref Name
                   </th>
                   <th className="py-1 px-4 text-left font-semibold text-gray-700 text-sm border-b">
                     Price
@@ -188,7 +188,7 @@ export default function ServiceManagaPage() {
                     <td className="py-1 px-4 text-gray-800 font-medium">
                       {item.serviceName}
                     </td>
-                    <td className="py-1 px-4 text-gray-700">{item.testName}</td>
+                    <td className="py-1 px-4 text-gray-700">{item.refName}</td>
                     <td className="py-1 px-4 text-gray-900 font-semibold">
                       ৳{item.price}
                     </td>

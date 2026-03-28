@@ -30,16 +30,16 @@ const Invoice = ({ invoice }: { invoice: IInvoice }) => {
             </h3>
             <div className="grid grid-cols-2 gap-1 text-sm">
               <p>
-                <strong>Name:</strong> {invoice.patientInfo.fullName}
+                <strong>Name:</strong> {invoice?.patientInfo?.fullName}
               </p>
               <p>
-                <strong>Patient ID:</strong> {invoice.patientInfo.pId}
+                <strong>Patient ID:</strong> {invoice?.patientInfo?.pId}
               </p>
               <p>
-                <strong>Age:</strong> {invoice.patientInfo.age} years
+                <strong>Age:</strong> {invoice?.patientInfo?.age} years
               </p>
               <p>
-                <strong>Phone:</strong> {invoice.patientInfo.phoneNumber}
+                <strong>Phone:</strong> {invoice?.patientInfo?.phoneNumber}
               </p>
             </div>
           </div>
@@ -55,7 +55,7 @@ const Invoice = ({ invoice }: { invoice: IInvoice }) => {
             </thead>
             <tbody>
               {invoice.services.map((s, i) => (
-                <tr key={s._id}>
+                <tr key={i}>
                   <td className="border px-2 py-1">{i + 1}</td>
                   <td className="border px-2 py-1">{s.serviceName}</td>
                   <td className="border px-2 py-1 text-right">
@@ -106,8 +106,8 @@ const Invoice = ({ invoice }: { invoice: IInvoice }) => {
           {/* Footer */}
           <div className="text-sm mt-8">
             <p>
-              <strong>Billed By:</strong> {invoice.billedBy.fullName} (
-              {invoice.billedBy.username})
+              <strong>Billed By:</strong> {invoice?.billedBy?.fullName} (
+              {invoice?.billedBy?.username})
             </p>
             <p className="text-xs text-gray-500 mt-2">
               This is a system-generated invoice. No signature required.

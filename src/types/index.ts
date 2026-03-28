@@ -195,7 +195,7 @@ export interface IMeta {
 export interface IServiceData {
   _id?: string;
   serviceName: string;
-  testName: string;
+  refName: string;
   price: number;
   division: (typeof constants.division)[number];
   department: (typeof constants.department)[number];

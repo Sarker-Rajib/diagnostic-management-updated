@@ -1,5 +1,6 @@
 "use client";
 
+import FixedPop from "@/components/fixedPop";
 import Invoice from "@/components/Invoice/Invoice";
 import { CreatePatientComponent } from "@/components/PatientComponents/CreatePatient";
 import { envConfig } from "@/config/envConfig";
@@ -158,7 +159,10 @@ export default function BillPage() {
 
     const token = await accessToken();
 
-    console.log(payload);
+    if (!token) {
+      toast.error("Token Error");
+      return;
+    }
 
     try {
       const billResponse = await fetch(`${envConfig.baseApi}/bill`, {
@@ -645,10 +649,12 @@ export default function BillPage() {
 
       {/* create a new patient data */}
       {isOpen && (
-        <CreatePatientComponent
-          setIsOpen={setIsOpen}
-          setNewPatient={setSelectedPatient}
-        />
+        <FixedPop>
+          <CreatePatientComponent
+            setIsOpen={setIsOpen}
+            setNewPatient={setSelectedPatient}
+          />
+        </FixedPop>
       )}
     </div>
   );

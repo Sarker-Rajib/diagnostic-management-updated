@@ -40,7 +40,7 @@ export const constants = {
     "CBC",
     "Coagulation",
     "Urine R/M/E",
-    "Chemistry",
+    "Biochemistry",
     "Immunology",
     "Serology",
     "Widal",

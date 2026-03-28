@@ -111,11 +111,11 @@ export default function ServiceUpdatePage({}) {
             <input
               name="testName"
               type="text"
-              defaultValue={service?.testName}
+              defaultValue={service?.refName}
               onChange={(e) =>
                 setFormData({
                   ...formData,
-                  testName: e.target.value,
+                  refName: e.target.value,
                 })
               }
               className="mt-1 w-full border border-sky-500 rounded px-3 py-2"

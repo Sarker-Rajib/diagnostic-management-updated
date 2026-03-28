@@ -38,7 +38,7 @@ export default function ServiceManageForm({
 
   const [formData, setFormData] = useState<IServiceData>({
     serviceName: "",
-    testName: "",
+    refName: "",
     price: 0,
     division: constants.division[0],
     department: constants.department[0],
@@ -79,7 +79,7 @@ export default function ServiceManageForm({
         toast.success(data.message || "Service created successfully");
         setFormData({
           serviceName: "",
-          testName: "",
+          refName: "",
           price: 0,
           division: constants.division[0],
           department: constants.department[0],
@@ -131,12 +131,12 @@ export default function ServiceManageForm({
             </div>
             <div>
               <label className="text-teal-600 block text-sm font-medium">
-                Test Name
+                Reference Name
               </label>
               <input
-                name="testName"
+                name="refName"
                 type="text"
-                value={formData.testName}
+                value={formData.refName}
                 onChange={handleChange}
                 className="mt-1 w-full border border-gray-300 rounded px-3 py-2"
                 required
