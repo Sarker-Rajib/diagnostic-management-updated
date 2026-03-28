@@ -47,13 +47,13 @@ const BloodReportSystem: React.FC = () => {
       setBillInformation(null);
       setTestInformation(null);
     }
-  }, [billNumber, reportGroupFiler]);
+  }, [billNumber]);
 
   useEffect(() => {
     if (reportGroupFiler) {
       fetchReportingData(billNumber, reportGroupFiler);
     }
-  }, [reportGroupFiler, billNumber]);
+  }, [reportGroupFiler]);
 
   const fetchBillData = async (billNo: string) => {
     setLoading(true);
@@ -138,20 +138,32 @@ const BloodReportSystem: React.FC = () => {
                 autoFocus
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Select Service/Test Department
-              </label>
-              <select
-                onChange={(e) => setReportGroupFilter(e.currentTarget.value)}
-                className="w-full p-1.5 px-2 border border-gray-300 rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {billInformation &&
-                  billInformation?.reportGroups?.map((group, i) => (
-                    <option key={i}>{group}</option>
+            {billInformation ? (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Select Service/Test Department
+                </label>
+
+                <select
+                  onChange={(e) => setReportGroupFilter(e.currentTarget.value)}
+                  className="w-full p-1.5 px-2 border border-gray-300 rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {billInformation?.reportGroups?.map((group, i) => (
+                    <option key={i} value={group}>
+                      {group}
+                    </option>
                   ))}
-              </select>
-            </div>
+                </select>
+              </div>
+            ) : billNumber.length === 0 ? (
+              <p className="text-rose-600 text-sm">
+                Please input a bill Number
+              </p>
+            ) : billNumber.length !== 8 ? (
+              <p className="text-rose-600 text-sm">
+                Input Number must be 8 digits
+              </p>
+            ) : null}
           </div>
           <div className="bg-white rounded-lg shadow-lg border border-purple-400  p-3">
             <h3 className="font-semibold text-gray-800 mb-2 pb-2 border-b flex justify-between">

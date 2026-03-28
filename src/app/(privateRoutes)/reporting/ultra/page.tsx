@@ -27,7 +27,7 @@ interface ITestOrderPayload {
       department: string;
       reportGroup: string;
       testSample: string;
-      status: "pending" | "completed" | "cancelled"; // extend if needed
+      status: string;
     },
   ];
 }
