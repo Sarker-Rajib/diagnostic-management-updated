@@ -33,8 +33,8 @@ const BloodReportSystem: React.FC = () => {
     null,
   );
   // data fetching filter
-  const [billNumber, setBillNumber] = useState("");
-  const [reportGroupFiler, setReportGroupFilter] = useState<string>();
+  const [billNumber, setBillNumber] = useState<string>("");
+  const [reportGroupFiler, setReportGroupFilter] = useState<string>("");
   // -------------------------
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingMessage, setLoadingMessage] = useState("");
@@ -50,15 +50,17 @@ const BloodReportSystem: React.FC = () => {
   }, [billNumber]);
 
   useEffect(() => {
-    if (reportGroupFiler) {
+    if (reportGroupFiler && reportGroupFiler !== "") {
       fetchReportingData(billNumber, reportGroupFiler);
     }
   }, [reportGroupFiler]);
 
   const fetchBillData = async (billNo: string) => {
     setLoading(true);
-    setLoadingMessage("Fetching patient records...");
-    setLoadingProgress(0);
+    // -----------------
+    setTestInformation(null);
+    setReportGroupFilter("");
+    // -----------------
 
     try {
       const response = await fetch(
@@ -165,7 +167,7 @@ const BloodReportSystem: React.FC = () => {
               </p>
             ) : null}
           </div>
-          <div className="bg-white rounded-lg shadow-lg border border-purple-400  p-3">
+          <div className="bg-white rounded-lg shadow-lg border border-purple-400 p-3">
             <h3 className="font-semibold text-gray-800 mb-2 pb-2 border-b flex justify-between">
               <span>Patient Details</span>
             </h3>

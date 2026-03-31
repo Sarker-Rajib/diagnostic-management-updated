@@ -69,4 +69,12 @@ export const constants = {
     "Skin Scraping",
     "N / A",
   ],
+
+  reportPaper: {
+    height: 11.2,
+    width: 8.4,
+    headingGap: 1.7,
+    footerGap: 0.7,
+    // in inch
+  },
 };
