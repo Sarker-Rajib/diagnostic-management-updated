@@ -1,6 +1,6 @@
 "use client";
 import FixedPop from "@/components/fixedPop";
-import { RefPanelCraeteForm } from "@/components/Forms/ReferencePanelAddForm";
+import { RefPanelCreateUpdateForm } from "@/components/Forms/ReferencePanelHandleForm";
 import { envConfig } from "@/config/envConfig";
 import { IMeta, ITestPanelFull } from "@/types";
 import {
@@ -33,6 +33,16 @@ export default function RefRangePage() {
   const [page, setPage] = useState<number>(1);
   const [limit] = useState<number>(10);
 
+  // update panel status
+  const [toUpdatePanel, setToUpdatePanel] = useState<ITestPanelFull | null>(
+    null,
+  );
+
+  const handleModalClose = () => {
+    setIsOpen(false);
+    setToUpdatePanel(null);
+  };
+
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
       // Build URL conditionally
@@ -60,7 +70,7 @@ export default function RefRangePage() {
     }, 300);
 
     return () => clearTimeout(delayDebounce);
-  }, [searchText, reload, page, limit, deletePannelId]);
+  }, [searchText, reload, page, limit]);
 
   // delete options state
   const handleDelete = async () => {
@@ -96,6 +106,7 @@ export default function RefRangePage() {
       };
     } finally {
       setDeletePanelId(null);
+      setReload(!reload);
     }
   };
 
@@ -252,7 +263,7 @@ export default function RefRangePage() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex gap-2">
                             <button
-                              // onClick={() => setToUpdateTestRef(ref)}
+                              onClick={() => setToUpdatePanel(ref)}
                               title="Update data"
                               className="p-2 bg-teal-100 hover:bg-teal-200 rounded-lg text-teal-600 transition cursor-pointer"
                             >
@@ -289,10 +300,19 @@ export default function RefRangePage() {
 
         {/* Add Patient Modal */}
         {isOpen && (
-          <RefPanelCraeteForm
-            setIsOpen={setIsOpen}
+          <RefPanelCreateUpdateForm
+            handleModalClose={handleModalClose}
             setReload={setReload}
             reload={reload}
+          />
+        )}
+
+        {toUpdatePanel && (
+          <RefPanelCreateUpdateForm
+            handleModalClose={handleModalClose}
+            setReload={setReload}
+            reload={reload}
+            defaultData={toUpdatePanel}
           />
         )}
 

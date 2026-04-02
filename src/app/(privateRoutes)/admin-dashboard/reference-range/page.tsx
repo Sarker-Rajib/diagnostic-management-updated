@@ -1,8 +1,10 @@
 "use client";
-import { TestRefCraeteForm } from "@/components/Forms/ReferenceRangeAddForm";
+import FixedPop from "@/components/fixedPop";
+import { TestRefForm } from "@/components/Forms/ReferenceRangeHandleForm";
 import { envConfig } from "@/config/envConfig";
 import { IMeta, ITestRefData } from "@/types";
 import {
+  ArrowRight,
   ChevronLeft,
   ChevronRight,
   Eraser,
@@ -14,6 +16,7 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PropagateLoader } from "react-spinners";
+import { toast } from "sonner";
 
 export default function RefRangePage() {
   const [reload, setReload] = useState<boolean>(false);
@@ -26,6 +29,55 @@ export default function RefRangePage() {
   const [searchText, setSearchText] = useState("");
   const [page, setPage] = useState<number>(1);
   const [limit] = useState<number>(10);
+
+  // update states
+  const [toUpdateRef, setToUpdateRef] = useState<ITestRefData | null>(null);
+
+  // close func
+  const handleClose = () => {
+    setIsOpen(false);
+    setToUpdateRef(null);
+  };
+
+  // delete states
+  const [toDeleteRef, setToDeleteRef] = useState<ITestRefData | null>(null);
+
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(
+        `${envConfig.baseApi}/reference-value/delete/${toDeleteRef?._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            // Add any auth headers if needed
+            // 'Authorization': `Bearer ${yourToken}`,
+          },
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.message || `Failed to delete: ${response.status}`,
+        );
+      }
+
+      const data = await response.json();
+
+      toast.success(data?.message);
+    } catch (error) {
+      console.error("Error deleting panel reference:", error);
+      return {
+        success: false,
+        message:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      };
+    } finally {
+      setToDeleteRef(null);
+      setReload(!reload);
+    }
+  };
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -57,29 +109,33 @@ export default function RefRangePage() {
   return (
     <div className="max-w-7xl mx-auto">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-center mb-2 gap-4">
-        <div className="flex items-center gap-3 bg-teal-700 px-6 py-3 rounded-lg shadow-md">
-          <Scale size={26} className="text-white" />
-          <h1 className="text-xl font-bold text-white">
-            Reference range Management
-          </h1>
+      <div className="flex justify-between pb-2">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 bg-teal-700 px-6 py-3 rounded-lg shadow-md">
+            <Scale size={26} className="text-white" />
+            <h1 className="text-xl font-bold text-white">
+              Reference range Management
+            </h1>
+          </div>
+
+          <button
+            onClick={() => setIsOpen(true)}
+            className="flex border border-yellow-400 items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white py-2 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1"
+          >
+            <span className="text-lg font-semibold">Register Reference </span>
+            <Pencil size={20} className="text-white" />
+          </button>
         </div>
 
-        <button
-          onClick={() => setIsOpen(true)}
-          className="flex border border-yellow-400 items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white py-2 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1"
-        >
-          <span className="text-lg font-semibold">Register Reference </span>
-          <Pencil size={20} className="text-white" />
-        </button>
-      </div>
-      <div className="text-end mb-2">
-        <Link
-          href={`/admin-dashboard/reference-range/panel-reference`}
-          className="items-center border border-yellow-400 text-lg inline-block bg-teal-600 hover:bg-teal-700 text-white py-2 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1"
-        >
-          Panel Reference
-        </Link>
+        <div className="text-end mb-2">
+          <Link
+            href={`/admin-dashboard/reference-range/panel-reference`}
+            className="border border-yellow-400 text-lg hover:bg-teal-700 bg-white py-2 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1 flex items-center text-amber-600"
+          >
+            Panel Reference
+            <ArrowRight size={18} className="ms-2/s" />
+          </Link>
+        </div>
       </div>
 
       {/* ref List Card */}
@@ -213,15 +269,16 @@ export default function RefRangePage() {
                       </td>
                       <td className="px-2 py-1 whitespace-nowrap">
                         <div className="flex gap-2 justify-center">
-                          <Link
-                            href={`/admin-dashboard/reference-range/${ref._id}`}
+                          <button
+                            onClick={() => setToUpdateRef(ref)}
                             title="Update data"
                             className="p-2 bg-teal-100 hover:bg-teal-200 rounded-lg text-teal-600 transition cursor-pointer"
                           >
                             <Pencil size={18} />
-                          </Link>
+                          </button>
                           <button
                             title="Delete"
+                            onClick={() => setToDeleteRef(ref)}
                             className="p-2 bg-blue-100 hover:bg-blue-200 rounded-lg text-blue-600 transition"
                           >
                             <Eraser size={18} />
@@ -250,11 +307,53 @@ export default function RefRangePage() {
 
       {/* Add Patient Modal */}
       {isOpen && (
-        <TestRefCraeteForm
-          setIsOpen={setIsOpen}
+        <TestRefForm
+          mode="create"
+          handleClose={handleClose}
           setReload={setReload}
           reload={reload}
         />
+      )}
+
+      {/* update item */}
+      {toUpdateRef && (
+        <TestRefForm
+          mode="update"
+          id={toUpdateRef._id}
+          initialData={toUpdateRef}
+          handleClose={handleClose}
+          setReload={setReload}
+          reload={reload}
+        />
+      )}
+
+      {/* confirm delete modal */}
+      {toDeleteRef && (
+        <FixedPop>
+          <div className="text-center bg-white rounded-lg p-6 max-w-md w-full mx-auto shadow-xl">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Do You want to delete the pannel?
+            </h3>
+
+            <hr />
+            <br />
+
+            <div className="flex justify-center gap-3">
+              <button
+                onClick={() => setToDeleteRef(null)}
+                className="px-4 py-2 text-sky-600 hover:text-gray-900 bg-amber-300 rounded disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </FixedPop>
       )}
     </div>
   );
