@@ -43,3 +43,10 @@ export interface IBilling {
     reason?: string;
   };
 }
+
+export interface IRefferalDoctor {
+  _id?: string;
+  refferalId?: string;
+  name: string;
+  institute: string;
+}
