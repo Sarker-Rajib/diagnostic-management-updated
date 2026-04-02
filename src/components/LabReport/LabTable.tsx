@@ -30,19 +30,19 @@ const LabTable = ({ data }: { data: TData[] }) => {
       </thead>
 
       <tbody>
-        {data.map((item: any) => {
-          if (item.isPanel) {
+        {data?.map((item: any) => {
+          if (item?.isPanel) {
             return (
               <>
                 {/* Panel Header */}
-                <tr key={item._id} className="bg-blue-100">
+                <tr key={item?._id} className="bg-blue-100">
                   <td colSpan={4} className="border px-4 py-2">
-                    {item.panelName}
+                    {item?.panelName}
                   </td>
                 </tr>
 
                 {/* Panel Tests */}
-                {item.tests.map((test: any) => {
+                {item?.tests.map((test: any) => {
                   const currentIndex = inputIndex++;
 
                   return (
@@ -75,8 +75,8 @@ const LabTable = ({ data }: { data: TData[] }) => {
           const currentIndex = inputIndex++;
 
           return (
-            <tr key={item._id}>
-              <td className="border px-4 py-2">{item.testName}</td>
+            <tr key={item?._id}>
+              <td className="border px-4 py-2">{item?.testName}</td>
 
               <td className="border px-4 py-2">
                 <input
@@ -88,10 +88,10 @@ const LabTable = ({ data }: { data: TData[] }) => {
                 />
               </td>
 
-              <td className="border px-4 py-2">{item.unit}</td>
+              <td className="border px-4 py-2">{item?.unit}</td>
 
               <td className="border px-4 py-2 whitespace-pre-line">
-                {item.referenceRange}
+                {item?.referenceRange}
               </td>
             </tr>
           );

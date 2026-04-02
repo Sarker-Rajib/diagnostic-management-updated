@@ -3,7 +3,6 @@
 
 import PendingBills from "@/components/BillingItems/PendingBills";
 import LabTable from "@/components/LabReport/LabTable";
-import FloatingLoader from "@/components/Loader/FloatingLoader";
 import { envConfig } from "@/config/envConfig";
 import { ITestPanelFull, ITestRefData } from "@/types";
 import React, { useState, useEffect } from "react";
@@ -80,8 +79,6 @@ const BloodReportSystem: React.FC = () => {
       const result = await response.json();
       setReportGroupFilter(result.data.reportGroups[0]);
       setBillInformation(result.data);
-
-      toast.success(result?.message);
     } catch (error) {
       console.error("Error fetching templates:", error);
     } finally {
@@ -196,16 +193,6 @@ const BloodReportSystem: React.FC = () => {
         </div>
       </div>
 
-      {/* loader */}
-      {loading && (
-        <FloatingLoader
-          isLoading={loading}
-          type="fullscreen"
-          message={loadingMessage}
-          progress={loadingProgress}
-        />
-      )}
-
       <div className="bg-white grid grid-cols-6 gap-4 p-2">
         {/* pending service id */}
         <div className="rounded-lg shadow-lg border border-purple-400 p-3">
@@ -218,7 +205,7 @@ const BloodReportSystem: React.FC = () => {
         <div className="col-span-5 border border-purple-400 rounded-lg p-3 shadow-lg">
           {testInformation ? (
             <div>
-              {testInformation.length > 0 ? (
+              {testInformation?.length > 0 ? (
                 <div className="col-span-5">
                   <LabTable data={testInformation} />
                 </div>
@@ -240,6 +227,31 @@ const BloodReportSystem: React.FC = () => {
                 </p>
               </div>
             )
+          )}
+
+          {loading && (
+            <span className="flex items-center">
+              <span className="me-2">Loading</span>
+              <svg
+                className="animate-spin h-4 w-4 text-sky-500"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            </span>
           )}
         </div>
       </div>
