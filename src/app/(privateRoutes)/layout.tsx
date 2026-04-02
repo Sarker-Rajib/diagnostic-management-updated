@@ -61,7 +61,7 @@ export default function RootLayout({
   return (
     <div className="min-h-screen bg-linear-to-br from-teal-50 to-blue-50">
       {/* Sidebar */}
-      <div className="w-16 bg-linear-to-b from-teal-700 to-teal-800 h-screen flex flex-col items-center py-8 gap-6 fixed top-0 left-0 shadow-xl z-10">
+      <div className="w-14 2xl:w-16 bg-linear-to-b from-teal-700 to-teal-800 h-screen flex flex-col items-center py-8 gap-6 fixed top-0 left-0 shadow-xl z-10">
         {/* Logo/App Name */}
         <div className="mb-8">
           <button
@@ -121,7 +121,7 @@ export default function RootLayout({
       </div>
 
       {/* Main Content */}
-      <div className="ml-16">
+      <div className="ml-14 2xl:ml-16">
         <div>{children}</div>
       </div>
     </div>

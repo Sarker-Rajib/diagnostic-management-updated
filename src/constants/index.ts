@@ -44,6 +44,7 @@ export const constants = {
     "Immunology",
     "Serology",
     "Widal",
+    "Tripple Antigen",
     "Blood_Culture",
     "Urine_Culture",
     "Pus_Culture",
