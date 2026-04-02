@@ -161,6 +161,7 @@ export default function BillPage() {
   // cursor pointer
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const doctorRef = useRef<HTMLInputElement | null>(null);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!services?.length) return;
@@ -456,9 +457,10 @@ export default function BillPage() {
                         type="text"
                         placeholder="Search doctors..."
                         onChange={handleRefDoctorSearch}
+                        ref={doctorRef}
                         onBlur={() => {
                           setTimeout(() => {
-                            setRefDoctors([]);
+                            setRefDoctors(null);
                           }, 100);
                         }}
                         className="text-gray-700 px-3 focus:outline-none w-full bg-transparent"
@@ -489,12 +491,12 @@ export default function BillPage() {
                             <tbody className="divide-y divide-gray-100">
                               {refDoctors?.map((doc, i) => (
                                 <tr
-                                  onClick={() =>
+                                  onClick={() => {
                                     setRefBy({
                                       name: doc.name,
                                       refferalId: doc.refferalId!,
-                                    })
-                                  }
+                                    });
+                                  }}
                                   key={i}
                                   className="hover:bg-linear-to-r hover:from-teal-50 hover:to-teal-100 cursor-pointer transition-all duration-150"
                                 >
@@ -529,8 +531,8 @@ export default function BillPage() {
                     ref={inputRef}
                     type="text"
                     placeholder="Search services..."
-                    onChange={handleServiceSearch}
                     onKeyDown={handleKeyDown}
+                    onChange={handleServiceSearch}
                     onBlur={() => {
                       setTimeout(() => {
                         setServices([]);
