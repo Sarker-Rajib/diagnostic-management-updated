@@ -1,5 +1,7 @@
 "use client";
 
+import BillingProgressBar from "@/components/BillingItems/BillingProgress";
+import { calculateBillingProgress } from "@/components/BillingItems/calcProgress";
 import FixedPop from "@/components/fixedPop";
 import Invoice from "@/components/Invoice/Invoice";
 import { CreatePatientComponent } from "@/components/PatientComponents/CreatePatient";
@@ -35,7 +37,7 @@ export default function BillPage() {
   const [refDoctors, setRefDoctors] = useState<IRefferalDoctor[] | null>(null);
   const [refBy, setRefBy] = useState<IRefferalDoctor | null>(null);
 
-  const subtotal = useMemo(() => {
+  const subTotal = useMemo(() => {
     return selectedServices.reduce((sum, s) => sum + s.price, 0);
   }, [selectedServices]);
 
@@ -43,17 +45,17 @@ export default function BillPage() {
     let value = 0;
 
     if (discountPercentage > 0) {
-      value = (subtotal * discountPercentage) / 100;
+      value = (subTotal * discountPercentage) / 100;
     } else if (discountAmount > 0) {
       value = discountAmount;
     }
 
     return Math.round(value);
-  }, [subtotal, discountPercentage, discountAmount]);
+  }, [subTotal, discountPercentage, discountAmount]);
 
   const totalAfterDiscount = useMemo(() => {
-    return Math.max(0, subtotal - discount);
-  }, [subtotal, discount]);
+    return Math.max(0, subTotal - discount);
+  }, [subTotal, discount]);
 
   const dueAmount = useMemo(() => {
     return paidAmount < totalAfterDiscount
@@ -72,7 +74,7 @@ export default function BillPage() {
   }, [paidAmount, totalAfterDiscount]);
 
   const paymentStatus = useMemo(() => {
-    if (discount === subtotal) return "Free";
+    if (discount === subTotal) return "Free";
     if (dueAmount === 0) return "Paid";
     if (paidAmount > 0) return "Partial";
     return "Unpaid";
@@ -209,6 +211,15 @@ export default function BillPage() {
     }
   };
 
+  const progress = calculateBillingProgress({
+    selectedPatient,
+    selectedServices,
+    refBy,
+    paidAmount,
+    discount,
+    subTotal,
+  });
+
   // create bill function
   const handleCreatBilling = async () => {
     setSaving(true);
@@ -230,7 +241,7 @@ export default function BillPage() {
       return;
     }
 
-    if (collectedPaidAmount === 0 && discount !== subtotal) {
+    if (collectedPaidAmount === 0 && discount !== subTotal) {
       toast.error("Paid Amount should not be 0 !");
       setSaving(false);
       return;
@@ -247,7 +258,7 @@ export default function BillPage() {
       pId: selectedPatient?.pId, // string;
       refBy: { name: refBy.name, refferalId: refBy.refferalId },
       services: selectedServices, // Array<IServiceBill>;
-      subTotal: subtotal, // number;
+      subTotal: subTotal, // number;
       discount: discount, // number;
       totalAmount: totalAfterDiscount, // number;
       paidAmount: collectedPaidAmount, // number;
@@ -628,19 +639,19 @@ export default function BillPage() {
                 )}
               </div>
 
-              {/* Subtotal - Improved */}
+              {/* subTotal - Improved */}
               <div className="text-right p-1 px-4 bg-linear-to-r from-gray-50 to-gray-100 rounded">
                 <span className="font-bold text-lg text-gray-800">
-                  Subtotal:
+                  subTotal:
                 </span>
                 <span className="font-bold text-xl text-teal-700 ml-2">
-                  ৳{subtotal}
+                  ৳{subTotal}
                 </span>
               </div>
 
               {/* Payment status */}
               {paymentStatus && (
-                <div className="p-3 text-center text-lg font-medium rounded-xl bg-teal-100 text-teal-800">
+                <div className="p-1 text-center text-lg font-medium rounded-xl bg-teal-100 text-yellow-600">
                   {paymentStatus}
                 </div>
               )}
@@ -681,9 +692,9 @@ export default function BillPage() {
                       value={discountAmount}
                       onChange={(e) => {
                         const discount = Number(e.target.value);
-                        if (discount > subtotal) {
-                          toast.error("Discount can't be > Subtotal !");
-                          setDiscountAmount(subtotal);
+                        if (discount > subTotal) {
+                          toast.error("Discount can't be > subTotal !");
+                          setDiscountAmount(subTotal);
                         } else if (discount < 0) {
                           toast.error("Discount can't be < 0 !");
                           setDiscountAmount(0);
@@ -770,16 +781,18 @@ export default function BillPage() {
                 </select>
               </div>
 
+              <BillingProgressBar progress={progress} />
+
               {/* Save Button - Improved */}
-              <div className="pt-4">
+              <div>
                 <button
                   onClick={handleCreatBilling}
-                  disabled={saving || !selectedPatient || refBy !== null}
+                  disabled={saving || !selectedPatient || refBy === null}
                   className={`
                   w-full py-3 px-6 rounded-lg font-bold text-white shadow-lg
                   transition-all duration-300 ease-in-out transform
                   ${
-                    saving || !selectedPatient
+                    saving || !selectedPatient || refBy === null
                       ? "bg-gray-400 cursor-not-allowed"
                       : `
                         bg-linear-to-r from-teal-600 to-teal-500
