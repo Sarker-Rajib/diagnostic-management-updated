@@ -12,6 +12,10 @@ import { Loader2, Plus, Search, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
+const sortByDivision = (services: IServiceItem[]) => {
+  return [...services].sort((a, b) => a.division.localeCompare(b.division));
+};
+
 export default function BillPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [saving, setSaving] = useState<boolean>(false);
@@ -20,13 +24,14 @@ export default function BillPage() {
   const [patients, setPatients] = useState<IPatient[]>([]);
   //
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
-  //
+  // accounts rel data
   const [discountPercentage, setDiscountPercentage] = useState<number>(0);
   const [discountAmount, setDiscountAmount] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] = useState("Cash");
   const [selectedServices, setSelectedServices] = useState<IServiceItem[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<IPatient | null>(null);
   const [paidAmount, setPaidAmount] = useState<number>(0);
+  // reffered doctor
   const [refDoctors, setRefDoctors] = useState<IRefferalDoctor[] | null>(null);
   const [refBy, setRefBy] = useState<IRefferalDoctor | null>(null);
 
@@ -180,22 +185,24 @@ export default function BillPage() {
     }
   };
 
-  const handleSelectService = (service: any) => {
+  const handleSelectService = (service: IServiceItem) => {
     setSelectedServices((prev) => {
-      const exists = prev.some((s) => s.serviceCode === service.serviceCode);
+      // جلوگیری duplicate
+      if (prev.some((s) => s.serviceCode === service.serviceCode)) {
+        return prev;
+      }
 
       const { _id, ...rest } = service;
 
-      if (exists) return prev;
-
-      return [...prev, rest];
+      return [...prev, rest].sort((a, b) =>
+        a.division.localeCompare(b.division),
+      );
     });
 
-    // reset
+    // reset UI state
     setServices([]);
     setActiveIndex(-1);
 
-    // clear + focus input
     if (inputRef.current) {
       inputRef.current.value = "";
       inputRef.current.focus();
@@ -536,8 +543,8 @@ export default function BillPage() {
                 </div>
 
                 {/* seleciton dropdown */}
-                {services?.length > 0 && (
-                  <div className="absolute top-full left-0 w-full bg-white z-10 border border-gray-200 rounded-lg shadow-xl mt-2 overflow-hidden">
+                {services && services.length > 0 && (
+                  <div className="absolute top-full left-0 w-full bg-white z-10 border border-amber-600 rounded-lg shadow-xl mt-2 overflow-hidden">
                     <div className="custom-scroll max-h-64 overflow-y-auto">
                       <table className="w-full">
                         <thead className="bg-linear-to-r from-teal-50 to-teal-100 sticky top-0">
@@ -585,7 +592,7 @@ export default function BillPage() {
                   </p>
                 </div>
 
-                {selectedServices.length === 0 ? (
+                {selectedServices && selectedServices.length === 0 ? (
                   <div className="p-8 text-center text-gray-400">
                     No services selected
                   </div>
@@ -605,7 +612,7 @@ export default function BillPage() {
                                 ),
                               )
                             }
-                            className="text-red-500 hover:text-red-700 transition-colors"
+                            className="text-red-500 hover:text-red-700 transition-colors border rounded cursor-pointer"
                             title="Remove"
                           >
                             <X size={18} />
