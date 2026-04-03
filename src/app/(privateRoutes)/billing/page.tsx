@@ -27,11 +27,8 @@ export default function BillPage() {
   const [selectedServices, setSelectedServices] = useState<IServiceItem[]>([]);
   const [selectedPatient, setSelectedPatient] = useState<IPatient | null>(null);
   const [paidAmount, setPaidAmount] = useState<number>(0);
-  const [refDoctors, setRefDoctors] = useState<IRefferalDoctor[] | null>();
-  const [refBy, setRefBy] = useState<{
-    name: string;
-    refferalId: string;
-  } | null>(null);
+  const [refDoctors, setRefDoctors] = useState<IRefferalDoctor[] | null>(null);
+  const [refBy, setRefBy] = useState<IRefferalDoctor | null>(null);
 
   const subtotal = useMemo(() => {
     return selectedServices.reduce((sum, s) => sum + s.price, 0);
@@ -138,7 +135,7 @@ export default function BillPage() {
     const value = e.target.value;
 
     if (value.length < 1) {
-      setPatients([]);
+      setRefDoctors(null);
       return;
     }
 
@@ -155,13 +152,12 @@ export default function BillPage() {
         .catch((error) => {
           console.error(error);
         });
-    }, 300);
+    }, 500);
   };
 
   // cursor pointer
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const doctorRef = useRef<HTMLInputElement | null>(null);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!services?.length) return;
@@ -242,7 +238,7 @@ export default function BillPage() {
     const payload = {
       patientInfo: selectedPatient?._id, // Types.ObjectId;
       pId: selectedPatient?.pId, // string;
-      refBy,
+      refBy: { name: refBy.name, refferalId: refBy.refferalId },
       services: selectedServices, // Array<IServiceBill>;
       subTotal: subtotal, // number;
       discount: discount, // number;
@@ -334,7 +330,7 @@ export default function BillPage() {
                       />
                     </div>
                     {patients?.length > 0 && (
-                      <div className="absolute top-full left-0 w-full bg-white z-50 border border-gray-200 rounded-lg shadow-xl mt-2 overflow-hidden">
+                      <div className="absolute top-full left-0 w-full bg-white z-50 border border-amber-600 rounded-lg shadow-xl mt-2 overflow-hidden">
                         <div className="custom-scroll max-h-64 overflow-y-auto">
                           <table className="w-full">
                             <thead className="bg-linear-to-r from-teal-50 to-teal-100 sticky top-0">
@@ -438,7 +434,7 @@ export default function BillPage() {
                 <label className="block text-sm font-semibold text-gray-700">
                   Referred By
                 </label>
-                {refBy?.name ? (
+                {refBy ? (
                   <div className="flex justify-between ps-2 items-center bg-linear-to-r from-sky-400 to-sky-500 rounded-lg shadow-md">
                     <p className="text-white font-medium">{`${refBy?.refferalId} - ${refBy?.name}`}</p>
                     <button
@@ -453,15 +449,13 @@ export default function BillPage() {
                   <div className="relative">
                     <div className="border-2 border-teal-400 rounded-lg flex items-center p-2 bg-gray-50 transition-all focus-within:border-teal-600 focus-within:bg-white focus-within:ring-2 focus-within:ring-teal-200">
                       <input
-                        id="refBy"
                         type="text"
                         placeholder="Search doctors..."
                         onChange={handleRefDoctorSearch}
-                        ref={doctorRef}
                         onBlur={() => {
                           setTimeout(() => {
                             setRefDoctors(null);
-                          }, 100);
+                          }, 200);
                         }}
                         className="text-gray-700 px-3 focus:outline-none w-full bg-transparent"
                       />
@@ -471,8 +465,8 @@ export default function BillPage() {
                       />
                     </div>
 
-                    {refDoctors!?.length > 0 && (
-                      <div className="absolute top-full left-0 w-full bg-white z-10 border border-amber-500 rounded-lg shadow-xl mt-2 overflow-hidden">
+                    {refDoctors && refDoctors.length > 0 && (
+                      <div className="absolute top-full left-0 w-full bg-white z-50 border border-amber-500 rounded-lg shadow-xl mt-2 overflow-hidden">
                         <div className="custom-scroll max-h-64 overflow-y-auto">
                           <table className="w-full">
                             <thead className="bg-linear-to-r from-teal-50 to-teal-100 sticky top-0">
@@ -492,10 +486,8 @@ export default function BillPage() {
                               {refDoctors?.map((doc, i) => (
                                 <tr
                                   onClick={() => {
-                                    setRefBy({
-                                      name: doc.name,
-                                      refferalId: doc.refferalId!,
-                                    });
+                                    setRefBy(doc);
+                                    setRefDoctors(null);
                                   }}
                                   key={i}
                                   className="hover:bg-linear-to-r hover:from-teal-50 hover:to-teal-100 cursor-pointer transition-all duration-150"
@@ -775,7 +767,7 @@ export default function BillPage() {
               <div className="pt-4">
                 <button
                   onClick={handleCreatBilling}
-                  disabled={saving || !selectedPatient || !refBy?.name}
+                  disabled={saving || !selectedPatient || refBy !== null}
                   className={`
                   w-full py-3 px-6 rounded-lg font-bold text-white shadow-lg
                   transition-all duration-300 ease-in-out transform
