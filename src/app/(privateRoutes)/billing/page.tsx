@@ -14,10 +14,6 @@ import { Loader2, Plus, Search, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
-const sortByDivision = (services: IServiceItem[]) => {
-  return [...services].sort((a, b) => a.division.localeCompare(b.division));
-};
-
 export default function BillPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [saving, setSaving] = useState<boolean>(false);

@@ -23,10 +23,6 @@ const PendingBills = ({ division, setBillNumber }: Props) => {
         );
 
         const data = await res.json();
-
-        console.log(data);
-
-        // assuming API returns: [{ billId: "B26000001" }]
         const billIds = data?.data?.map((b: any) => b.billId) || [];
 
         setPendingBills(billIds);
