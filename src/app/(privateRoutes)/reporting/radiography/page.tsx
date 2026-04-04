@@ -56,7 +56,7 @@ export default function RadiologyImagingReportPage() {
 
       try {
         const response = await fetch(
-          `${envConfig.baseApi}/usg-report/list/B${billNumber}`,
+          `${envConfig.baseApi}/ragiology-report/list/B${billNumber}`,
           {
             method: "GET",
             headers: {

@@ -219,7 +219,7 @@ export default function ServiceManageForm({
 
             <div>
               <label className="text-teal-600 block text-sm font-medium">
-                Report Group
+                Pannel
               </label>
 
               <div className="mt-1 flex gap-4 border border-sky-500 p-1.5 rounded">
