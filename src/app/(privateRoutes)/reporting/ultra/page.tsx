@@ -17,6 +17,10 @@ interface ITestOrderPayload {
     age: number;
     phoneNumber: string;
     pId: string;
+    refBy: {
+      name: string;
+      refferalId: string;
+    };
   };
   services: [
     {

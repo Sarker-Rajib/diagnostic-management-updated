@@ -1,6 +1,6 @@
 "use client";
 import PendingBills from "@/components/BillingItems/PendingBills";
-import UsgReportPrint from "@/components/ReportPad/UsgReportFormat";
+import RadiologyReportPrint from "@/components/ReportPad/RadiologyReportFormat";
 import TiptapEditor from "@/components/TextEditor";
 import { envConfig } from "@/config/envConfig";
 import { IUSGTemplate } from "@/types/usgReport";
@@ -17,6 +17,10 @@ interface ITestOrderPayload {
     age: number;
     phoneNumber: string;
     pId: string;
+    refBy: {
+      name: string;
+      refferalId: string;
+    };
   };
   services: [
     {
@@ -149,6 +153,7 @@ export default function RadiologyImagingReportPage() {
 
   const handlePrint = () => {
     if (printRef.current) {
+      RadiologyReportPrint;
       FPrint(printRef.current);
     }
   };
@@ -342,12 +347,13 @@ export default function RadiologyImagingReportPage() {
           </button>
         </div>
       </div>
+
       <br />
 
       <div className="hidden">
         <div>
           <div ref={printRef}>
-            <UsgReportPrint
+            <RadiologyReportPrint
               serviceTitle={serviceTitle}
               currentData={currentData}
               patientInfo={serviceBillData?.patientInfo}

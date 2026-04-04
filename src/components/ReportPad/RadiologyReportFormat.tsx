@@ -1,81 +1,9 @@
-const UsgReportPrint = ({ serviceTitle, patientInfo, currentData }: any) => {
+const RadiologyReportPrint = ({
+  serviceTitle,
+  patientInfo,
+  currentData,
+}: any) => {
   const patient = patientInfo;
-
-  //   return (
-  //     <div className="flex justify-center print:bg-white">
-  //       {/* Paper */}
-  //       <div
-  //         className="bg-white shadow print:shadow-none relative px-6"
-  //         style={{
-  //           width: "8.4in",
-  //           height: "11.2in",
-  //         }}
-  //       >
-  //         <div style={{ paddingBottom: "1.7in" }}></div>
-  //         {/* Inner Content Padding */}
-  //         {/* Patient Info */}
-  //         <div className="grid grid-cols-2 gap-4 text-xs mt-4 border p-2">
-  //           <div>
-  //             <p>
-  //               <b>Name:</b> {patient?.fullName}
-  //             </p>
-  //             <p>
-  //               <b>Age:</b> {patient?.age}
-  //             </p>
-  //             <p>
-  //               <b>Gender:</b> {patient?.gender}
-  //             </p>
-  //           </div>
-  //           <div>
-  //             <p>
-  //               <b>ID:</b> {patient?.pId}
-  //             </p>
-  //             <p>
-  //               <b>Phone:</b> {patient?.phoneNumber}
-  //             </p>
-  //             <p>
-  //               <b>Date:</b> {new Date().toLocaleDateString()}
-  //             </p>
-  //           </div>
-  //         </div>
-
-  //         <div className="py-4 flex flex-col justify-between">
-  //           {/* Body */}
-  //           {/* Title */}
-  //           <div className="text-center mt-3">
-  //             <h2 className="text-lg font-semibold uppercase border-b inline-block px-4">
-  //               {serviceTitle}
-  //             </h2>
-  //           </div>
-  //           <div className="flex-1 overflow-hidden">
-  //             <div
-  //               className="prose max-w-none text-xs
-  //                          [&_p]:mb-1
-  //                          [&_ul]:list-disc [&_ul]:ml-4
-  //                          [&_li]:mb-1"
-  //               dangerouslySetInnerHTML={{ __html: currentData }}
-  //             />
-  //           </div>
-  //         </div>
-
-  //         <div className="px-6 absolute left-0 bottom-0 w-full">
-  //           <div style={{ paddingBottom: "0.7in" }} className="relative">
-  //             <div className="flex justify-between text-xs">
-  //               <div>
-  //                 <p>Checked By</p>
-  //                 <div className="mt-6 border-t w-32"></div>
-  //               </div>
-
-  //               <div className="text-right">
-  //                 <p>Authorized Signature</p>
-  //                 <div className="mt-6 border-t w-32 ml-auto"></div>
-  //               </div>
-  //             </div>
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
 
   return (
     <div className="flex justify-center bg-gray-100 print:bg-white">
@@ -89,6 +17,7 @@ const UsgReportPrint = ({ serviceTitle, patientInfo, currentData }: any) => {
       >
         <div style={{ paddingBottom: "1.2in" }}></div>
 
+        {/* Inner Content Padding */}
         {/* Patient Info Card */}
         <div className="px-6">
           <div className="flex justify-between gap-6 text-sm bg-linear-to-r from-gray-50 to-white rounded-lg border border-gray-200 p-4 shadow-sm">
@@ -202,4 +131,4 @@ const UsgReportPrint = ({ serviceTitle, patientInfo, currentData }: any) => {
   );
 };
 
-export default UsgReportPrint;
+export default RadiologyReportPrint;

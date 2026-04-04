@@ -36,40 +36,46 @@ const LabReportPrint = ({
       >
         <div style={{ paddingBottom: "1.2in" }}></div>
 
-        {/* Inner Content Padding */}
         {/* Patient Info Card */}
         <div className="px-6">
-          <div className="grid grid-cols-2 gap-6 text-sm bg-linear-to-r from-gray-50 to-white rounded-lg border border-gray-200 p-4 shadow-sm">
+          <div className="flex justify-between gap-6 text-sm bg-linear-to-r from-gray-50 to-white rounded-lg border border-gray-200 p-4 shadow-sm">
             <div className="space-y-1.5">
               <p className="flex items-baseline">
-                <span className="text-gray-600 w-16 font-medium">Name:</span>
+                <span className="text-gray-600 w-16 font-medium">Name</span>
                 <span className="text-gray-800 font-semibold">
-                  {patient?.fullName}
+                  : {patient?.fullName}
                 </span>
               </p>
               <p className="flex items-baseline">
-                <span className="text-gray-600 w-16 font-medium">Age:</span>
-                <span className="text-gray-800">{patient?.age} years</span>
+                <span className="text-gray-600 w-16 font-medium">Age</span>
+                <span className="text-gray-800">: {patient?.age} years</span>
               </p>
               <p className="flex items-baseline">
-                <span className="text-gray-600 w-16 font-medium">Gender:</span>
-                <span className="text-gray-800">{patient?.gender}</span>
+                <span className="text-gray-600 w-16 font-medium">Gender</span>
+                <span className="text-gray-800">: {patient?.gender}</span>
+              </p>
+              <p className="flex items-baseline">
+                <span className="text-gray-600 w-16 font-medium whitespace-nowrap">
+                  Ref By
+                </span>
+                <span className="text-gray-800">: {patient?.refBy?.name}</span>
               </p>
             </div>
             <div className="space-y-1.5">
-              <p className="flex items-baseline justify-end">
-                <span className="text-gray-600 w-12 font-medium">ID:</span>
+              <p className="flex items-baseline">
+                <span className="text-gray-600 w-12 font-medium">ID</span>
                 <span className="text-gray-800 font-mono text-sm">
-                  {patient?.pId}
+                  : {patient?.pId}
                 </span>
               </p>
-              <p className="flex items-baseline justify-end">
-                <span className="text-gray-600 w-12 font-medium">Phone:</span>
-                <span className="text-gray-800">{patient?.phoneNumber}</span>
+              <p className="flex items-baseline">
+                <span className="text-gray-600 w-12 font-medium">Phone</span>
+                <span className="text-gray-800">: {patient?.phoneNumber}</span>
               </p>
-              <p className="flex items-baseline justify-end">
-                <span className="text-gray-600 w-12 font-medium">Date:</span>
+              <p className="flex items-baseline">
+                <span className="text-gray-600 w-12 font-medium">Date</span>
                 <span className="text-gray-800">
+                  :{" "}
                   {new Date().toLocaleDateString("en-US", {
                     year: "numeric",
                     month: "long",
@@ -81,6 +87,7 @@ const LabReportPrint = ({
           </div>
         </div>
 
+        {/* body */}
         <div className="p-4 px-6">
           {/* Title */}
           <div className="text-center mb-4">

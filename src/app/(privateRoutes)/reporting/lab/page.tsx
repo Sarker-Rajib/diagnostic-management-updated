@@ -18,6 +18,10 @@ interface IReportData {
     age: number;
     phoneNumber: string;
     pId: string;
+    refBy: {
+      name: string;
+      refferalId: string;
+    };
   };
   reportGroups: string[];
 }
