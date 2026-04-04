@@ -38,10 +38,10 @@ const LabTable = ({
     <table className="min-w-full border border-gray-300">
       <thead>
         <tr>
-          <th className="border px-4 py-2">Test Name</th>
-          <th className="border px-4 py-2">Result</th>
-          <th className="border px-4 py-2">Unit</th>
-          <th className="border px-4 py-2">Reference</th>
+          <th className="border px-2 py-0.5">Test Name</th>
+          <th className="border px-2 py-0.5">Result</th>
+          <th className="border px-2 py-0.5">Unit</th>
+          <th className="border px-2 py-0.5">Reference</th>
         </tr>
       </thead>
 
@@ -52,20 +52,22 @@ const LabTable = ({
               <React.Fragment key={i}>
                 {/* Panel Header */}
                 <tr className="bg-blue-100">
-                  <td colSpan={4} className="border px-4 py-2">
+                  <td colSpan={4} className="border px-2 py-0.5 font-bold">
                     {item?.panelName}
                   </td>
                 </tr>
 
                 {/* Panel Tests */}
-                {item?.tests.map((test: any) => {
+                {item?.tests.map((test: any, i: number) => {
                   const currentIndex = inputIndex++;
 
                   return (
-                    <tr key={`test-${test._id}`}>
-                      <td className="border px-4 py-2">{test?.testName}</td>
+                    <tr key={i}>
+                      <td className="ps-4 border px-2 py-0.5">
+                        {test?.testName}
+                      </td>
 
-                      <td className="border px-4 py-2">
+                      <td className="border px-2 py-0.5">
                         <input
                           ref={(el) => {
                             if (el) inputRefs.current[currentIndex] = el;
@@ -76,13 +78,13 @@ const LabTable = ({
                             handleChange(test?.refName, e.target.value)
                           }
                           onKeyDown={(e) => handleKeyDown(e, currentIndex)}
-                          className="w-full border px-2 py-1"
+                          className="w-full border px-2 py-1 rounded-lg"
                         />
                       </td>
 
-                      <td className="border px-4 py-2">{test?.unit}</td>
+                      <td className="border px-2 py-0.5">{test?.unit}</td>
 
-                      <td className="border px-4 py-2 whitespace-pre-line">
+                      <td className="border px-2 py-0.5 whitespace-pre-line">
                         {test?.referenceRange}
                       </td>
                     </tr>
@@ -97,9 +99,9 @@ const LabTable = ({
 
           return (
             <tr key={item?._id}>
-              <td className="border px-4 py-2">{item?.testName}</td>
+              <td className="border px-2 py-0.5">{item?.testName}</td>
 
-              <td className="border px-4 py-2">
+              <td className="border px-2 py-0.5">
                 <input
                   ref={(el) => {
                     if (el) inputRefs.current[currentIndex] = el;
@@ -108,13 +110,13 @@ const LabTable = ({
                   value={results[item.refName] || ""}
                   onChange={(e) => handleChange(item.refName, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(e, currentIndex)}
-                  className="w-full border px-2 py-1"
+                  className="w-full border px-2 py-1 rounded-lg"
                 />
               </td>
 
-              <td className="border px-4 py-2">{item?.unit}</td>
+              <td className="border px-2 py-0.5">{item?.unit}</td>
 
-              <td className="border px-4 py-2 whitespace-pre-line">
+              <td className="border px-2 py-0.5 whitespace-pre-line">
                 {item?.referenceRange}
               </td>
             </tr>
