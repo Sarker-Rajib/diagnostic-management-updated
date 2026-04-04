@@ -1,13 +1,29 @@
-import { useRef } from "react";
-import { ITestPanelFull, ITestRefData } from "@/types";
+"use client";
+import React, { useRef } from "react";
+import { ITestPanelFull, ITestRefData, TResultMap } from "@/types";
 
 export type TData = ITestRefData | ITestPanelFull;
 
-const LabTable = ({ data }: { data: TData[] }) => {
+const LabTable = ({
+  data,
+  results,
+  setResults,
+}: {
+  data: TData[];
+  results: TResultMap;
+  setResults: React.Dispatch<React.SetStateAction<TResultMap>>;
+}) => {
   const inputRefs = useRef<HTMLInputElement[]>([]);
 
-  let inputIndex = 0; // track index manually
+  const handleChange = (name: string, value: string) => {
+    setResults((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
+  // handle input move
+  let inputIndex = 0; // track index manually
   const handleKeyDown = (
     e: React.KeyboardEvent<HTMLInputElement>,
     index: number,
@@ -30,12 +46,12 @@ const LabTable = ({ data }: { data: TData[] }) => {
       </thead>
 
       <tbody>
-        {data?.map((item: any) => {
+        {data?.map((item: any, i: number) => {
           if (item?.isPanel) {
             return (
-              <>
+              <React.Fragment key={i}>
                 {/* Panel Header */}
-                <tr key={item?._id} className="bg-blue-100">
+                <tr className="bg-blue-100">
                   <td colSpan={4} className="border px-4 py-2">
                     {item?.panelName}
                   </td>
@@ -46,28 +62,33 @@ const LabTable = ({ data }: { data: TData[] }) => {
                   const currentIndex = inputIndex++;
 
                   return (
-                    <tr key={test._id}>
-                      <td className="border px-4 py-2">{test.testName}</td>
+                    <tr key={`test-${test._id}`}>
+                      <td className="border px-4 py-2">{test?.testName}</td>
 
                       <td className="border px-4 py-2">
                         <input
                           ref={(el) => {
                             if (el) inputRefs.current[currentIndex] = el;
                           }}
+                          name={test?.refName}
+                          value={results[test?.refName] || ""}
+                          onChange={(e) =>
+                            handleChange(test?.refName, e.target.value)
+                          }
                           onKeyDown={(e) => handleKeyDown(e, currentIndex)}
                           className="w-full border px-2 py-1"
                         />
                       </td>
 
-                      <td className="border px-4 py-2">{test.unit}</td>
+                      <td className="border px-4 py-2">{test?.unit}</td>
 
                       <td className="border px-4 py-2 whitespace-pre-line">
-                        {test.referenceRange}
+                        {test?.referenceRange}
                       </td>
                     </tr>
                   );
                 })}
-              </>
+              </React.Fragment>
             );
           }
 
@@ -83,6 +104,9 @@ const LabTable = ({ data }: { data: TData[] }) => {
                   ref={(el) => {
                     if (el) inputRefs.current[currentIndex] = el;
                   }}
+                  name={item.refName}
+                  value={results[item.refName] || ""}
+                  onChange={(e) => handleChange(item.refName, e.target.value)}
                   onKeyDown={(e) => handleKeyDown(e, currentIndex)}
                   className="w-full border px-2 py-1"
                 />

@@ -3,9 +3,11 @@
 
 import PendingBills from "@/components/BillingItems/PendingBills";
 import LabTable from "@/components/LabReport/LabTable";
+import LabReportPrint from "@/components/ReportPad/LabReportFormat";
 import { envConfig } from "@/config/envConfig";
-import { ITestPanelFull, ITestRefData } from "@/types";
-import React, { useState, useEffect } from "react";
+import { ITestPanelFull, ITestRefData, TResultMap } from "@/types";
+import { FPrint } from "@/utility/printComponent";
+import React, { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 interface IReportData {
@@ -35,8 +37,9 @@ const BloodReportSystem: React.FC = () => {
   const [billNumber, setBillNumber] = useState<string>("");
   const [reportGroupFiler, setReportGroupFilter] = useState<string>("");
   // -------------------------
-  const [loadingProgress, setLoadingProgress] = useState(0);
-  const [loadingMessage, setLoadingMessage] = useState("");
+
+  // ------------------------
+  const [results, setResults] = useState<TResultMap>({});
 
   // Fetch bill data when bill number changes
   useEffect(() => {
@@ -45,6 +48,7 @@ const BloodReportSystem: React.FC = () => {
     } else {
       setBillInformation(null);
       setTestInformation(null);
+      setResults({});
     }
   }, [billNumber]);
 
@@ -59,7 +63,8 @@ const BloodReportSystem: React.FC = () => {
     // -----------------
     setTestInformation(null);
     setReportGroupFilter("");
-    // -----------------
+    setResults({});
+    // ----------------------------------
 
     try {
       const response = await fetch(
@@ -88,8 +93,6 @@ const BloodReportSystem: React.FC = () => {
 
   const fetchReportingData = async (billNo: string, reportGroup: string) => {
     setLoading(true);
-    setLoadingMessage("Fetching patient records...");
-    setLoadingProgress(0);
 
     try {
       const response = await fetch(
@@ -117,6 +120,24 @@ const BloodReportSystem: React.FC = () => {
       setLoading(false);
     }
   };
+
+  // print oftions state
+  const printRef = useRef<HTMLDivElement>(null);
+  const [shouldPrint, setShouldPrint] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (testInformation && billInformation && shouldPrint) {
+      handlePrint();
+      setShouldPrint(false);
+    }
+  }, [testInformation, shouldPrint]);
+
+  const handlePrint = () => {
+    if (printRef.current) {
+      FPrint(printRef.current);
+    }
+  };
+  // -----------------------------------------------------
 
   return (
     <div className="max-w-400 mx-auto p-2">
@@ -207,13 +228,47 @@ const BloodReportSystem: React.FC = () => {
             <div>
               {testInformation?.length > 0 ? (
                 <div className="col-span-5">
-                  <LabTable data={testInformation} />
+                  <LabTable
+                    data={testInformation}
+                    results={results}
+                    setResults={setResults}
+                  />
                 </div>
               ) : (
                 <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center">
                   <p className="text-gray-500">No tests available</p>
                 </div>
               )}
+
+              <div className="pt-2 flex justify-end">
+                <button
+                  disabled={!testInformation || !billInformation || !results}
+                  onClick={() => setShouldPrint(true)}
+                  className="px-6 py-2.5 bg-linear-to-r from-blue-600 to-blue-700 
+                  hover:from-blue-700 hover:to-blue-800 
+                  text-white font-medium rounded-lg 
+                  shadow-md hover:shadow-lg 
+                  transform hover:-translate-y-0.5 
+                  transition-all duration-200 
+                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+                  flex items-center gap-2"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                    />
+                  </svg>
+                  Print Report
+                </button>
+              </div>
             </div>
           ) : (
             billNumber &&
@@ -254,6 +309,22 @@ const BloodReportSystem: React.FC = () => {
             </span>
           )}
         </div>
+      </div>
+
+      {/* printing portion */}
+      <div className="hidden">
+        {results && (
+          <div>
+            <div ref={printRef}>
+              <LabReportPrint
+                serviceTitle={reportGroupFiler}
+                testList={testInformation}
+                testResults={results}
+                patientInfo={billInformation?.patientInfo}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

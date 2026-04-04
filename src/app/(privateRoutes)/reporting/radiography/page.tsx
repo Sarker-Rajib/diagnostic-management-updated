@@ -1,27 +1,158 @@
 "use client";
+import PendingBills from "@/components/BillingItems/PendingBills";
+import UsgReportPrint from "@/components/ReportPad/UsgReportFormat";
 import TiptapEditor from "@/components/TextEditor";
-import { useState } from "react";
+import { envConfig } from "@/config/envConfig";
+import { IUSGTemplate } from "@/types/usgReport";
+import { FPrint } from "@/utility/printComponent";
+import { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
-const dept = ["Haematology", "Biochemistry", "Serology"];
+interface ITestOrderPayload {
+  patientInfo: {
+    _id: string;
+    fullName: string;
+    gender: "Male" | "Female" | "Other";
+    age: number;
+    phoneNumber: string;
+    pId: string;
+  };
+  services: [
+    {
+      serviceCode: number;
+      serviceName: string;
+      testName: string;
+      price: number;
+      panel: boolean;
+      division: string;
+      department: string;
+      reportGroup: string;
+      testSample: string;
+      status: string;
+    },
+  ];
+}
 
-export default function RadiographyReportPage() {
-  const [billNumber, setBillNumber] = useState("");
-  const [departmentFilter, setDepartmentFilter] =
-    useState<string>("Haematology");
+export default function RadiologyImagingReportPage() {
+  const [data, setData] = useState<IUSGTemplate[]>();
+  const [currentData, setCurrentData] = useState<string>("");
+  const [loading, setLoading] = useState(true);
+  const [billNumber, setBillNumber] = useState<string>("");
+  const [serviceBillData, setServiceBillData] =
+    useState<ITestOrderPayload | null>(null);
+  const [serviceTitle, setServiceTitle] = useState<string>();
 
-  const cont = `<p><em>Hi,</em></p><p><em>This is </em>the test Text</p><p><strong>I Hope you Understand</strong></p><p></p>`;
-  const { control, handleSubmit } = useForm({
+  // load services
+  useEffect(() => {
+    const loadUsgServices = async () => {
+      if (billNumber.length !== 8) {
+        setCurrentData("");
+        setServiceBillData(null);
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const response = await fetch(
+          `${envConfig.baseApi}/usg-report/list/B${billNumber}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
+
+        if (!response.ok) {
+          toast.error("Something went wrong");
+        }
+
+        const result = await response.json();
+
+        setServiceBillData(result.data);
+        setServiceTitle(result.data.services[0].serviceName);
+        toast.success("Template Data Loaded successfully!");
+      } catch (error) {
+        console.error("Error fetching templates:", error);
+        // throw error;
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUsgServices();
+  }, [billNumber]);
+
+  // load templates
+  useEffect(() => {
+    const loadTemplates = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`${envConfig.baseApi}/usg-template/all`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          toast.error("Something went wrong");
+        }
+
+        const result = await response.json();
+
+        setData(result.data.templates);
+        toast.success("Template Data Loaded successfully!");
+      } catch (error) {
+        console.error("Error fetching templates:", error);
+        // throw error;
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTemplates();
+  }, []);
+
+  // ----------------------------------------
+  const { control, handleSubmit, reset } = useForm({
     defaultValues: {
-      Details: cont,
+      Details: "",
     },
   });
 
+  useEffect(() => {
+    reset({ Details: currentData || "" });
+  }, [currentData, reset]);
+  // ----------------------------------------
+
   const onSubmit = (data: any) => {
-    console.log(data); // all form values
-    toast.success(`${data.Details}`);
+    // console.log(data); // all form values
+    // toast.success(`${data.Details}`);
+
+    console.log("FF", currentData);
+    console.log("currentData", data);
   };
+
+  // print oftions state
+  const printRef = useRef<HTMLDivElement>(null);
+  const [shouldPrint, setShouldPrint] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (currentData && serviceBillData && shouldPrint) {
+      handlePrint();
+      setShouldPrint(false);
+    }
+  }, [currentData, shouldPrint]);
+
+  const handlePrint = () => {
+    if (printRef.current) {
+      FPrint(printRef.current);
+    }
+  };
+  // -----------------------------------------------------
 
   return (
     <div className="max-w-400 mx-auto p-2 min-h-screen">
@@ -35,56 +166,62 @@ export default function RadiographyReportPage() {
               <input
                 type="number"
                 value={billNumber}
-                onChange={(e) => setBillNumber(e.target.value)}
+                onChange={(e) => {
+                  setBillNumber(e.target.value);
+                }}
                 className="w-full p-1 px-2 border border-gray-300 rounded-md text-lg"
                 placeholder="e.g 26000001"
                 autoFocus
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Select Service/Test Department
-              </label>
-              <select
-                onChange={(e) => setDepartmentFilter(e.currentTarget.value)}
-                className="w-full p-1.5 px-2 border border-gray-300 rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {dept.map((dep, idx) => (
-                  <option key={idx} value={dep}>
-                    {dep}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {serviceBillData && serviceBillData.services.length > 0 ? (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Select Service/Test Department
+                </label>
+                <select
+                  onChange={(e) => setServiceTitle(e.currentTarget.value)}
+                  className="w-full p-1.5 px-2 border border-gray-300 rounded-md text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {serviceBillData.services?.map((dep, idx) => (
+                    <option key={idx} value={dep.serviceName}>
+                      {dep.serviceName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : (
+              <p className="text-red-600">
+                {!billNumber
+                  ? "Please input a bill number"
+                  : serviceBillData == null
+                    ? ""
+                    : "No data Found"}
+              </p>
+            )}
           </div>
           <div className="bg-white rounded-lg shadow-lg border border-purple-400  p-3">
             <h3 className="font-semibold text-gray-800 mb-2 pb-2 border-b flex justify-between">
               <span>Patient Details</span>
-              <span
-              // className={`text-xs px-2 p-1 rounded ${
-              //   currentBill?.status === "completed"
-              //     ? "bg-green-100 text-green-800"
-              //     : "bg-yellow-100 text-yellow-800"
-              // }`}
-              >
-                {/* {currentBill?.status || "pending"} */}
-              </span>
             </h3>
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <label className="text-xs text-gray-500">Patient Name</label>
-                {/* <p className="font-medium">{currentBill?.patient.name}</p> */}
+                <p className="font-medium">
+                  {serviceBillData?.patientInfo.fullName}
+                </p>
               </div>
               <div>
                 <label className="text-xs text-gray-500">Age / Gender</label>
                 <p className="font-medium">
-                  {/* {/* {currentBill?.patient.age}y / {currentBill?.patient.gender} */}
+                  {serviceBillData?.patientInfo.age}y /{" "}
+                  {serviceBillData?.patientInfo.gender}
                 </p>
               </div>
               <div>
                 <label className="text-xs text-gray-500">Phone</label>
                 <p className="font-medium">
-                  {/* {currentBill?.patient.phone || "N/A"} */}
+                  {serviceBillData?.patientInfo.phoneNumber || "N/A"}
                 </p>
               </div>
             </div>
@@ -93,32 +230,131 @@ export default function RadiographyReportPage() {
       </div>
 
       {/* ----- */}
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Controller
-          name="Details"
-          control={control}
-          render={({ field, fieldState }) => {
-            return (
-              <div>
-                <TiptapEditor content={field.value} onChange={field.onChange} />
-                {fieldState.error && (
-                  <p className="text-sm text-destructive">
-                    {fieldState.error.message}
-                  </p>
-                )}
-              </div>
-            );
-          }}
-        />
-        <div className="text-end pt-2">
+      <div className="grid grid-cols-7 gap-3 bg-white">
+        <div className="rounded-lg shadow-lg border border-purple-400 p-3">
+          <PendingBills
+            setBillNumber={setBillNumber}
+            division="Ragiology & Imaging"
+          />
+        </div>
+        {/* ---------------- */}
+        <div className="report col-span-6">
+          <div className="flex items-center gap-2 bg-white p-1 rounded-lg">
+            <label className="whitespace-nowrap p-1 ps-2">
+              Choose a Template :
+            </label>
+            {loading ? (
+              <svg
+                className="animate-spin h-4 w-4 text-sky-500"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            ) : (
+              <select
+                className="p-1 px-2 border border-gray-300 rounded-md text-lg"
+                onChange={(e) => {
+                  const selected = data?.find(
+                    (item) => item.title === e.currentTarget.value,
+                  );
+                  setCurrentData(selected?.template || "");
+                }}
+              >
+                <option value="">Select Template</option>
+                {data?.map((item, i) => (
+                  <option key={i} value={item.title}>
+                    {item.title}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Controller
+              name="Details"
+              control={control}
+              render={({ field, fieldState }) => {
+                return (
+                  <div>
+                    <TiptapEditor
+                      content={field.value}
+                      onChange={field.onChange}
+                    />
+                    {fieldState.error && (
+                      <p className="text-sm text-destructive">
+                        {fieldState.error.message}
+                      </p>
+                    )}
+                  </div>
+                );
+              }}
+            />
+            <div className="text-end pt-2">
+              <button
+                type="submit"
+                className="inline-block p-2 px-8 bg-green-600 text-white rounded-md"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
+
           <button
-            type="submit"
-            className="inline-block p-2 px-8 bg-green-600 text-white rounded-md"
+            disabled={!currentData || !serviceBillData}
+            onClick={() => setShouldPrint(true)}
+            className="px-6 py-2.5 bg-linear-to-r from-blue-600 to-blue-700 
+             hover:from-blue-700 hover:to-blue-800 
+             text-white font-medium rounded-lg 
+             shadow-md hover:shadow-lg 
+             transform hover:-translate-y-0.5 
+             transition-all duration-200 
+             focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2
+             flex items-center gap-2"
           >
-            Submit
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+              />
+            </svg>
+            Print Report
           </button>
         </div>
-      </form>
+      </div>
+      <br />
+
+      <div className="hidden">
+        <div>
+          <div ref={printRef}>
+            <UsgReportPrint
+              serviceTitle={serviceTitle}
+              currentData={currentData}
+              patientInfo={serviceBillData?.patientInfo}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -224,3 +224,7 @@ export interface ITestPanelFull {
   priority: number;
   isPanel: boolean;
 }
+
+export type TResultMap = {
+  [refName: string]: string;
+};

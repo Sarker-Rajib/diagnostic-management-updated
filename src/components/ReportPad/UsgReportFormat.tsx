@@ -78,24 +78,21 @@ const UsgReportPrint = ({ serviceTitle, patientInfo, currentData }: any) => {
   //   );
 
   return (
-    <div className="flex justify-center bg-gray-100 print:bg-white p-4">
+    <div className="flex justify-center bg-gray-100 print:bg-white">
       {/* Paper */}
       <div
-        className="bg-white shadow-xl print:shadow-none relative rounded-lg overflow-hidden"
+        className="bg-white shadow-xl print:shadow-none relative rounded-lg overflow-hidden p-4"
         style={{
           width: "8.4in",
           height: "11.2in",
         }}
       >
-        {/* Subtle header decoration */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-teal-400"></div>
-
         <div style={{ paddingBottom: "1.2in" }}></div>
 
         {/* Inner Content Padding */}
         {/* Patient Info Card */}
         <div className="px-6">
-          <div className="grid grid-cols-2 gap-6 text-sm bg-gradient-to-r from-gray-50 to-white rounded-lg border border-gray-200 p-4 shadow-sm">
+          <div className="grid grid-cols-2 gap-6 text-sm bg-linear-to-r from-gray-50 to-white rounded-lg border border-gray-200 p-4 shadow-sm">
             <div className="space-y-1.5">
               <p className="flex items-baseline">
                 <span className="text-gray-600 w-16 font-medium">Name:</span>
