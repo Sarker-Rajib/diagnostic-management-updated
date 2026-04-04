@@ -234,7 +234,7 @@ export default function RadiologyImagingReportPage() {
         <div className="rounded-lg shadow-lg border border-purple-400 p-3">
           <PendingBills
             setBillNumber={setBillNumber}
-            division="Ragiology & Imaging"
+            division="Radiology & Imaging"
           />
         </div>
         {/* ---------------- */}

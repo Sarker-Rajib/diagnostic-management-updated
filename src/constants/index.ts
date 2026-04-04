@@ -33,7 +33,7 @@ export const constants = {
     "Immunology",
     "Transfusion Medicine",
     "Ultrasonography",
-    "Ragiology & Imaging",
+    "Radiology & Imaging",
   ],
 
   reportGroup: [
@@ -53,7 +53,7 @@ export const constants = {
     "Histopathology",
     "Cytopathology",
     "Ultrasonography",
-    "Ragiology & Imaging",
+    "Radiology & Imaging",
     "N / A",
   ],
 
