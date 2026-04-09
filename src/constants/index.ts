@@ -26,12 +26,12 @@ export const constants = {
 
   department: [
     "Haematology",
-    "Biochemistry",
     "Clinical Pathology",
-    "Histopathology & Cytopathology",
-    "Microbiology",
+    "Biochemistry",
     "Immunology",
+    "Microbiology",
     "Transfusion Medicine",
+    "Histopathology & Cytopathology",
     "Ultrasonography",
     "Radiology & Imaging",
   ],
@@ -49,6 +49,8 @@ export const constants = {
     "Urine_Culture",
     "Pus_Culture",
     "Stool_Culture",
+    "Blood Grouping",
+    "Compatiblity Test",
     "CSF",
     "Histopathology",
     "Cytopathology",
@@ -78,4 +80,46 @@ export const constants = {
     footerGap: 0.7,
     // in inch
   },
+
+  reportSampleDepartment: [
+    { name: "CBC", department: "Haematology", sample: "Blood" },
+    { name: "Coagulation", department: "Haematology", sample: "Blood" },
+    { name: "Urine R/M/E", department: "Clinical Pathology", sample: "Urine" },
+    { name: "Biochemistry", department: "Biochemistry", sample: "Blood" },
+    { name: "Immunology", department: "Biochemistry", sample: "Blood" },
+    { name: "CSF", department: "Biochemistry", sample: "CSF" },
+    { name: "Serology", department: "Microbiology", sample: "Blood" },
+    { name: "Widal", department: "Microbiology", sample: "Blood" },
+    { name: "Tripple Antigen", department: "Microbiology", sample: "Blood" },
+    { name: "Blood_Culture", department: "Microbiology", sample: "Blood" },
+    { name: "Urine_Culture", department: "Microbiology", sample: "Urine" },
+    { name: "Pus_Culture", department: "Microbiology", sample: "Pus" },
+    { name: "Stool_Culture", department: "Microbiology", sample: "Stool" },
+    {
+      name: "Blood Grouping",
+      department: "Transfusion Medicine",
+      sample: "Blood",
+    },
+    {
+      name: "Compatiblity Test",
+      department: "Transfusion Medicine",
+      sample: "Blood",
+    },
+    {
+      name: "Histopathology",
+      department: "Histopathology & Cytopathology",
+      sample: "Tissue",
+    },
+    {
+      name: "Cytopathology",
+      department: "Histopathology & Cytopathology",
+      sample: "Blood",
+    },
+    { name: "Ultrasonography", department: "Ultrasonography", sample: "Blood" },
+    {
+      name: "Radiology & Imaging",
+      department: "Radiology & Imaging",
+      sample: "Blood",
+    },
+  ],
 };

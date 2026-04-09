@@ -1,13 +1,29 @@
+import { getCurrentUser } from "@/services/AuthServices";
 import { Home, MonitorCheck, Users } from "lucide-react";
 import Link from "next/link";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const user = await getCurrentUser();
+
   const menuItems = [
     { name: "Home", path: "/", icon: Home },
     { name: "Patients", path: "/dashboard/patients", icon: Users },
     { name: "Bills", path: "/dashboard/bills", icon: MonitorCheck },
-    { name: "Admin Dashboard", path: "/admin-dashboard", icon: MonitorCheck },
+    // 🔒 Only Super-Admin can see this
+    {
+      name: "Admin Dashboard",
+      path: "/admin-dashboard",
+      icon: MonitorCheck,
+      roles: ["Super-Admin"],
+    },
   ];
+
+  const filteredMenu = menuItems.filter((item) => {
+    // If no roles defined → visible to all
+    if (!item.roles) return true;
+
+    return item.roles.includes(user?.role);
+  });
 
   return (
     <div className="min-h-screen bg-linear-to-br from-teal-50 to-blue-50 p-6 flex items-center justify-center">
@@ -21,12 +37,12 @@ export default function DashboardPage() {
           </p>
         </div>
         {/* Menu Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {menuItems.map((item, i) => (
+        <div className="grid grid-cols-4 gap-6">
+          {filteredMenu.map((item, i) => (
             <Link
               key={i}
               href={item.path}
-              className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
+              className="group w-full relative overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-1"
             >
               {/* Gradient background overlay on hover */}
               <div className="absolute inset-0 bg-linear-to-br from-teal-500 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>

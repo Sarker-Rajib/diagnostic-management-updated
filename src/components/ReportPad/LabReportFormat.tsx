@@ -1,3 +1,4 @@
+import { constants } from "@/constants";
 import React from "react";
 
 const LabReportPrint = ({
@@ -7,6 +8,9 @@ const LabReportPrint = ({
   testResults,
 }: any) => {
   const patient = patientInfo;
+  const departmetName = constants?.reportSampleDepartment?.find(
+    (r) => r.name === serviceTitle,
+  );
 
   function checkAbnormal(value: string, referenceRange: string) {
     if (!value || !referenceRange) return false;
@@ -24,6 +28,12 @@ const LabReportPrint = ({
     return false;
   }
 
+  const maskPhone = (phone: string) => {
+    if (!phone || phone.length !== 11) return phone;
+
+    return phone.slice(0, 3) + "***" + phone.slice(6);
+  };
+
   return (
     <div className="flex justify-center bg-gray-100 print:bg-white">
       {/* Paper */}
@@ -39,47 +49,63 @@ const LabReportPrint = ({
         {/* Patient Info Card */}
         <div className="px-6">
           <div className="flex justify-between gap-6 text-sm bg-linear-to-r from-gray-50 to-white rounded-lg border border-gray-200 p-4 shadow-sm">
-            <div className="space-y-1">
-              <p className="flex items-baseline">
-                <span className=" w-16 font-medium">Name</span>
-                <span className=" font-semibold">: {patient?.fullName}</span>
-              </p>
-              <p className="flex items-baseline">
-                <span className=" w-16 font-medium">Age</span>
-                <span className="">: {patient?.age} years</span>
-              </p>
-              <p className="flex items-baseline">
-                <span className=" w-16 font-medium">Gender</span>
-                <span className="">: {patient?.gender}</span>
-              </p>
-              <p className="flex items-baseline">
-                <span className=" w-16 font-medium whitespace-nowrap">
-                  Ref By
-                </span>
-                <span className="">: {patient?.refBy?.name}</span>
-              </p>
-            </div>
-            <div className="space-y-1">
-              <p className="flex items-baseline">
-                <span className=" w-12 font-medium">ID</span>
-                <span className=" font-mono text-sm">: {patient?.pId}</span>
-              </p>
-              <p className="flex items-baseline">
-                <span className=" w-12 font-medium">Phone</span>
-                <span className="">: {patient?.phoneNumber}</span>
-              </p>
-              <p className="flex items-baseline">
-                <span className=" w-12 font-medium">Date</span>
-                <span className="">
-                  :{" "}
-                  {new Date().toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </span>
-              </p>
-            </div>
+            <table>
+              <tbody>
+                <tr>
+                  <td>Name</td>
+                  <td className="px-2">:</td>
+                  <td>{patient?.fullName}</td>
+                </tr>
+                <tr>
+                  <td>Age</td>
+                  <td className="px-2">:</td>
+                  <td>
+                    {patient?.age} years / {patient?.gender}
+                  </td>
+                </tr>
+                <tr>
+                  <td>Phone</td>
+                  <td className="px-2">:</td>
+                  <td>{maskPhone(patient?.phoneNumber)}</td>
+                </tr>
+                <tr>
+                  <td>Ref By</td>
+                  <td className="px-2">:</td>
+                  <td>{patient?.refBy?.name}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <table>
+              <tbody>
+                <tr>
+                  <td>MR ID</td>
+                  <td className="px-2">:</td>
+                  <td>B260000--</td>
+                </tr>
+                <tr>
+                  <td>PT ID</td>
+                  <td className="px-2">:</td>
+                  <td>{patient?.pId}</td>
+                </tr>
+                <tr>
+                  <td>Sample</td>
+                  <td className="px-2">:</td>
+                  <td>{departmetName?.sample}</td>
+                </tr>
+                <tr>
+                  <td>Date</td>
+                  <td className="px-2">:</td>
+                  <td>
+                    {new Date().toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -88,7 +114,7 @@ const LabReportPrint = ({
           {/* Title */}
           <div className="text-center mb-4">
             <h2 className="text-xl font-bold uppercase tracking-wide  border-b-2 border-blue-400 inline-block px-6 pb-1">
-              {serviceTitle}
+              {departmetName?.department} Report
             </h2>
           </div>
 
@@ -120,14 +146,14 @@ const LabReportPrint = ({
                       <tr className="bg-gray-50/30">
                         <td
                           colSpan={4}
-                          className="px-4 py-1 text-sm font-semibold "
+                          className="px-4 py-px text-sm font-semibold "
                         >
                           {item?.panelName}
                         </td>
                       </tr>
 
                       {/* Panel Tests */}
-                      {item?.tests.map((test: any) => {
+                      {item?.tests.map((test: any, i: number) => {
                         const resultValue = testResults[test?.refName];
                         const isAbnormal = checkAbnormal(
                           resultValue,
@@ -136,21 +162,26 @@ const LabReportPrint = ({
 
                         return (
                           <tr
-                            key={`test-${test._id}`}
+                            key={i}
                             className="hover:bg-gray-50/50 transition-colors"
                           >
-                            <td className="px-4 py-1 pl-8 text-sm ">
+                            <td className="px-4 py-px pl-8 text-sm align-top">
                               {test?.testName}
                             </td>
+
                             <td
-                              className={`px-4 py-1 text-sm font-mono ${isAbnormal ? "text-amber-600 font-medium" : ""}`}
+                              className={`px-4 py-px text-sm font-mono align-top ${
+                                isAbnormal ? "text-amber-600 font-medium" : ""
+                              }`}
                             >
                               {resultValue || "—"}
                             </td>
-                            <td className="px-4 py-1 text-sm ">
+
+                            <td className="px-4 py-px text-sm align-top">
                               {test?.unit || "—"}
                             </td>
-                            <td className="px-4 py-1 text-sm  whitespace-pre-line">
+
+                            <td className="px-4 py-px text-sm whitespace-pre-line align-top">
                               {test?.referenceRange || "—"}
                             </td>
                           </tr>
@@ -172,14 +203,18 @@ const LabReportPrint = ({
                     key={item?._id}
                     className="hover:bg-gray-50/50 transition-colors"
                   >
-                    <td className="px-4 py-1 text-sm ">{item?.testName}</td>
+                    <td className="align-top px-4 py-1 text-sm ">
+                      {item?.testName}
+                    </td>
                     <td
-                      className={`px-4 py-1 text-sm font-mono ${isAbnormal ? "text-amber-600 font-medium" : ""}`}
+                      className={`align-top px-4 py-1 text-sm font-mono ${isAbnormal ? "text-amber-600 font-medium" : ""}`}
                     >
                       {resultValue || "—"}
                     </td>
-                    <td className="px-4 py-1 text-sm ">{item?.unit || "—"}</td>
-                    <td className="px-4 py-1 text-sm  whitespace-pre-line">
+                    <td className="align-top px-4 py-1 text-sm ">
+                      {item?.unit || "—"}
+                    </td>
+                    <td className="align-top px-4 py-1 text-sm  whitespace-pre-line">
                       {item?.referenceRange || "—"}
                     </td>
                   </tr>
@@ -196,7 +231,7 @@ const LabReportPrint = ({
               <div className="flex-1">
                 <p className=" font-medium mb-2">Checked By</p>
                 <div className="w-40 border-b border-gray-300"></div>
-                <p className=" mt-1 text-[10px]">(Doctor's Name & Stamp)</p>
+                <p className=" mt-1 text-[10px]">(Medical Technologist)</p>
               </div>
 
               <div className="flex-1 text-right">
@@ -209,8 +244,7 @@ const LabReportPrint = ({
             {/* Optional: Footer note */}
             <div className="text-center mt-4 pt-2 border-t border-gray-100">
               <p className=" text-[8px]">
-                This is a computer-generated document. No signature is required
-                for electronic copy.
+                This is a computer-generated document.
               </p>
             </div>
           </div>
