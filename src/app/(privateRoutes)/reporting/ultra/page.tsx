@@ -133,11 +133,14 @@ export default function UltrasonographyReportPage() {
   // ----------------------------------------
 
   const onSubmit = (data: any) => {
-    // console.log(data); // all form values
-    // toast.success(`${data.Details}`);
-
-    console.log("FF", currentData);
-    console.log("currentData", data);
+    // console.log("FF", currentData);
+    // console.log("currentData", data);
+    if (data.Details.length < 15) {
+      toast.error("Please input report data >=8 !");
+      return;
+    }
+    setCurrentData(data.Details);
+    setShouldPrint(true);
   };
 
   // print oftions state
@@ -318,7 +321,7 @@ export default function UltrasonographyReportPage() {
 
           <button
             disabled={!currentData || !serviceBillData}
-            onClick={() => setShouldPrint(true)}
+            onClick={handleSubmit(onSubmit)}
             className="px-6 py-2.5 bg-linear-to-r from-blue-600 to-blue-700 
              hover:from-blue-700 hover:to-blue-800 
              text-white font-medium rounded-lg 
