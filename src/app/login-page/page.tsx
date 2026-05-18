@@ -74,7 +74,7 @@ export default function LoginPage() {
             <input
               type="text"
               name="username"
-              defaultValue={"super-admin"}
+              // defaultValue={"super-admin"}
               placeholder="Enter your user name"
               className="w-full rounded-lg border border-gray-300 p-3 text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none"
             />
@@ -87,7 +87,7 @@ export default function LoginPage() {
             <input
               type="password"
               name="password"
-              defaultValue={"999999999"}
+              // defaultValue={"999999999"}
               placeholder="Enter your password"
               className="w-full rounded-lg border border-gray-300 p-3 text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none"
             />
